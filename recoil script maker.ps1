@@ -291,28 +291,28 @@ if (Test-Path $presetPath) {
                     <DockPanel>
                         <TextBlock Text="X Axis Left" Style="{StaticResource LabelTextStyle}"/>
                         <TextBlock Text="{Binding Value, ElementName=XLeftSlider, StringFormat=N0}" Style="{StaticResource ValueTextStyle}"/>
-                        <Slider x:Name="XLeftSlider" Style="{StaticResource SliderStyle}" Minimum="0" Maximum="50000" Value="0"/>
+                        <Slider x:Name="XLeftSlider" Style="{StaticResource SliderStyle}" Minimum="0" Maximum="1500" Value="0"/>
                     </DockPanel>
 
                     <!-- X Axis Right -->
                     <DockPanel>
                         <TextBlock Text="X Axis Right" Style="{StaticResource LabelTextStyle}"/>
                         <TextBlock Text="{Binding Value, ElementName=XRightSlider, StringFormat=N0}" Style="{StaticResource ValueTextStyle}"/>
-                        <Slider x:Name="XRightSlider" Style="{StaticResource SliderStyle}" Minimum="0" Maximum="50000" Value="0"/>
+                        <Slider x:Name="XRightSlider" Style="{StaticResource SliderStyle}" Minimum="0" Maximum="1500" Value="0"/>
                     </DockPanel>
 
                     <!-- Y Axis Down -->
                     <DockPanel>
                         <TextBlock Text="Y Axis Down" Style="{StaticResource LabelTextStyle}"/>
                         <TextBlock Text="{Binding Value, ElementName=YDownSlider, StringFormat=N0}" Style="{StaticResource ValueTextStyle}"/>
-                        <Slider x:Name="YDownSlider" Style="{StaticResource SliderStyle}" Minimum="0" Maximum="50000" Value="0"/>
+                        <Slider x:Name="YDownSlider" Style="{StaticResource SliderStyle}" Minimum="0" Maximum="1500" Value="0"/>
                     </DockPanel>
 
                     <!-- Y Axis Up -->
                     <DockPanel>
                         <TextBlock Text="Y Axis Up" Style="{StaticResource LabelTextStyle}"/>
                         <TextBlock Text="{Binding Value, ElementName=YUpSlider, StringFormat=N0}" Style="{StaticResource ValueTextStyle}"/>
-                        <Slider x:Name="YUpSlider" Style="{StaticResource SliderStyle}" Minimum="0" Maximum="50000" Value="0"/>
+                        <Slider x:Name="YUpSlider" Style="{StaticResource SliderStyle}" Minimum="0" Maximum="1500" Value="0"/>
                     </DockPanel>
 
                     <!-- Control Buttons -->
