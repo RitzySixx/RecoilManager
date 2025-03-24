@@ -120,51 +120,61 @@ if (Test-Path $presetPath) {
     WindowStyle="None"
     AllowsTransparency="True"
     Background="Transparent"
-    Width="600"
-    Height="450"
+    Width="675"
+    Height="475"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
     Topmost="True">
-    
+
     <Window.Resources>
         <ResourceDictionary>
-            <LinearGradientBrush x:Key="LogoGradient" StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="#FF0000" Offset="0"/>
-                <GradientStop Color="#FF4500" Offset="0.5"/>
-                <GradientStop Color="#FF1493" Offset="1"/>
-            </LinearGradientBrush>
-            
-            <SolidColorBrush x:Key="WindowBackground" Color="#1E1E1E"/>
-            <SolidColorBrush x:Key="TextColor" Color="#FFFFFF"/>
-            <SolidColorBrush x:Key="ButtonBackground" Color="#2D2D2D"/>
+            <!-- Ultra Modern Colors -->
+            <SolidColorBrush x:Key="AccentColor" Color="#FF0066"/>
+            <SolidColorBrush x:Key="BackgroundPrimary" Color="#0A0A0A"/>
+            <SolidColorBrush x:Key="BackgroundSecondary" Color="#141414"/>
+            <SolidColorBrush x:Key="TextPrimary" Color="#FFFFFF"/>
+            <SolidColorBrush x:Key="TextSecondary" Color="#B0B0B0"/>
+            <SolidColorBrush x:Key="BorderBrush" Color="#1E1E1E"/>
 
-            <Style x:Key="PresetNameStyle" TargetType="TextBlock">
-                <Setter Property="Foreground" Value="White"/>
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="Margin" Value="0,0,0,20"/>
-                <Setter Property="HorizontalAlignment" Value="Center"/>
+            <!-- Modern Text Styles -->
+            <Style x:Key="HeaderTextStyle" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+                <Setter Property="FontSize" Value="22"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="FontFamily" Value="Segoe UI"/>
             </Style>
 
-            <Style x:Key="PresetButtonStyle" TargetType="Button">
-                <Setter Property="Background" Value="#333333"/>
-                <Setter Property="Foreground" Value="#FFFFFF"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="BorderBrush" Value="{StaticResource LogoGradient}"/>
-                <Setter Property="Width" Value="120"/>
-                <Setter Property="Height" Value="30"/>
-                <Setter Property="Margin" Value="10,20,10,0"/>
+            <Style x:Key="LabelTextStyle" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource TextSecondary}"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontWeight" Value="Medium"/>
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+            </Style>
+
+            <!-- Ultra Modern Button Style -->
+            <Style x:Key="ModernButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource BackgroundSecondary}"/>
+                <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Height" Value="38"/>
+                <Setter Property="Width" Value="140"/>
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="4">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border x:Name="border" 
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="6">
+                                <ContentPresenter HorizontalAlignment="Center" 
+                                                VerticalAlignment="Center"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#444444"/>
+                                    <Setter TargetName="border" Property="Background" Value="{StaticResource AccentColor}"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="border" Property="Opacity" Value="0.8"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -172,56 +182,61 @@ if (Test-Path $presetPath) {
                 </Setter>
             </Style>
 
-                        <Style x:Key="SliderStyle" TargetType="Slider">
+            <!-- Enhanced Slider Style -->
+            <Style x:Key="ModernSliderStyle" TargetType="Slider">
                 <Setter Property="Margin" Value="5,8,15,8"/>
-                <Setter Property="Width" Value="250"/>
+                <Setter Property="Width" Value="350"/>
+                <Setter Property="Height" Value="24"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Slider">
                             <Grid>
-                                <Border x:Name="PART_Border" 
-                                        BorderBrush="{StaticResource LogoGradient}" 
-                                        BorderThickness="1" 
-                                        CornerRadius="4"
-                                        Background="#333333"
-                                        Height="2"/>
+                                <Border x:Name="TrackBackground" 
+                                        Background="{StaticResource BorderBrush}"
+                                        Height="6"
+                                        CornerRadius="3"/>
                                 <Track x:Name="PART_Track">
                                     <Track.DecreaseRepeatButton>
-                                        <RepeatButton Command="Slider.DecreaseLarge">
+                                        <RepeatButton Command="{x:Static Slider.DecreaseLarge}">
                                             <RepeatButton.Template>
                                                 <ControlTemplate TargetType="RepeatButton">
-                                                    <Border Background="{StaticResource LogoGradient}" 
-                                                            CornerRadius="4 0 0 4"/>
+                                                    <Border Height="6" CornerRadius="3">
+                                                        <Border.Background>
+                                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                                <GradientStop Color="#FF0000" Offset="0"/>
+                                                                <GradientStop Color="#FF69B4" Offset="1"/>
+                                                            </LinearGradientBrush>
+                                                        </Border.Background>
+                                                    </Border>
                                                 </ControlTemplate>
                                             </RepeatButton.Template>
                                         </RepeatButton>
                                     </Track.DecreaseRepeatButton>
-                                    <Track.Thumb>
-                                        <Thumb>
-                                            <Thumb.Template>
-                                                <ControlTemplate TargetType="Thumb">
-                                                    <Grid>
-                                                        <Ellipse Width="12" Height="12" Fill="#FFFFFF"/>
-                                                        <Ellipse Width="10" Height="10" Fill="{StaticResource LogoGradient}">
-                                                            <Ellipse.Effect>
-                                                                <DropShadowEffect Color="#FF1493" BlurRadius="5" ShadowDepth="0"/>
-                                                            </Ellipse.Effect>
-                                                        </Ellipse>
-                                                    </Grid>
-                                                </ControlTemplate>
-                                            </Thumb.Template>
-                                        </Thumb>
-                                    </Track.Thumb>
                                     <Track.IncreaseRepeatButton>
-                                        <RepeatButton Command="Slider.IncreaseLarge">
+                                        <RepeatButton Command="{x:Static Slider.IncreaseLarge}">
                                             <RepeatButton.Template>
                                                 <ControlTemplate TargetType="RepeatButton">
-                                                    <Border Background="#333333" 
-                                                            CornerRadius="0 4 4 0"/>
+                                                    <Border Background="{StaticResource BorderBrush}" Height="6" CornerRadius="3"/>
                                                 </ControlTemplate>
                                             </RepeatButton.Template>
                                         </RepeatButton>
                                     </Track.IncreaseRepeatButton>
+                                    <Track.Thumb>
+                                        <Thumb>
+                                            <Thumb.Template>
+                                                <ControlTemplate TargetType="Thumb">
+                                                    <Ellipse Width="16" Height="16">
+                                                        <Ellipse.Fill>
+                                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                                <GradientStop Color="#FF0000" Offset="0"/>
+                                                                <GradientStop Color="#FF69B4" Offset="1"/>
+                                                            </LinearGradientBrush>
+                                                        </Ellipse.Fill>
+                                                    </Ellipse>
+                                                </ControlTemplate>
+                                            </Thumb.Template>
+                                        </Thumb>
+                                    </Track.Thumb>
                                 </Track>
                             </Grid>
                         </ControlTemplate>
@@ -229,38 +244,24 @@ if (Test-Path $presetPath) {
                 </Setter>
             </Style>
 
-            <Style x:Key="ValueTextStyle" TargetType="TextBlock">
-                <Setter Property="Foreground" Value="{StaticResource LogoGradient}"/>
-                <Setter Property="FontWeight" Value="Bold"/>
-                <Setter Property="Width" Value="35"/>
-                <Setter Property="TextAlignment" Value="Right"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
-
-            <Style x:Key="LabelTextStyle" TargetType="TextBlock">
-                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-                <Setter Property="Width" Value="85"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-            </Style>
-
-            <Style x:Key="WindowButtonStyle" TargetType="Button">
-                <Setter Property="Background" Value="Transparent"/>
+            <!-- Modern TextBox Style -->
+            <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+                <Setter Property="Background" Value="{StaticResource BackgroundSecondary}"/>
+                <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
                 <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-                <Setter Property="FontSize" Value="16"/>
-                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Width" Value="70"/>
+                <Setter Property="Height" Value="32"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontWeight" Value="Medium"/>
+                <Setter Property="TextAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
                 <Setter Property="Template">
                     <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="3">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <ControlTemplate TargetType="TextBox">
+                            <Border Background="{TemplateBinding Background}"
+                                    CornerRadius="6">
+                                <ScrollViewer x:Name="PART_ContentHost" Margin="5,2"/>
                             </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="border" Property="Background" Value="{StaticResource LogoGradient}"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
@@ -268,144 +269,149 @@ if (Test-Path $presetPath) {
         </ResourceDictionary>
     </Window.Resources>
 
-        <Border CornerRadius="5" Background="{StaticResource WindowBackground}" BorderBrush="{StaticResource LogoGradient}" BorderThickness="1">
+    <Border CornerRadius="10" Background="{StaticResource BackgroundPrimary}">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="30"/>
+                <RowDefinition Height="45"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <!-- Title Bar -->
-            <Grid Grid.Row="0" Background="Transparent">
-                <Canvas HorizontalAlignment="Left" Margin="10,5,0,0">
-                    <Ellipse Width="20" Height="20" StrokeThickness="2">
-                        <Ellipse.Stroke>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                <GradientStop Color="#FF0000" Offset="0"/>
-                                <GradientStop Color="#FF1493" Offset="1"/>
-                            </LinearGradientBrush>
-                        </Ellipse.Stroke>
-                    </Ellipse>
+            <Border Grid.Row="0" 
+                    Background="{StaticResource BackgroundSecondary}" 
+                    CornerRadius="10,10,0,0">
+                <Grid>
+                    <StackPanel Orientation="Horizontal" 
+                               Margin="15,0,0,0"
+                               VerticalAlignment="Center">
+                        <TextBlock Text="RITZY" 
+                                 Style="{StaticResource HeaderTextStyle}"/>
+                        <TextBlock Text="PRO" 
+                                 Foreground="{StaticResource AccentColor}"
+                                 Style="{StaticResource HeaderTextStyle}"
+                                 Margin="5,0,0,0"/>
+                    </StackPanel>
                     
-                    <TextBlock Text="R" 
-                             FontFamily="Bahnschrift"
-                             FontWeight="ExtraBold"
-                             FontSize="14"
-                             Canvas.Left="6"
-                             Canvas.Top="1">
-                        <TextBlock.Foreground>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                <GradientStop Color="#FF0000" Offset="0"/>
-                                <GradientStop Color="#FF4500" Offset="0.5"/>
-                                <GradientStop Color="#FF1493" Offset="1"/>
-                            </LinearGradientBrush>
-                        </TextBlock.Foreground>
-                        <TextBlock.Effect>
-                            <DropShadowEffect Color="#FF1493" Direction="320" ShadowDepth="1" BlurRadius="2" Opacity="0.5"/>
-                        </TextBlock.Effect>
-                    </TextBlock>
-                </Canvas>
-
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,0">
-                    <Button x:Name="MinimizeButton" Content="−" Width="25" Height="20" Margin="0,0,5,0"
-                            Style="{StaticResource WindowButtonStyle}"/>
-                    <Button x:Name="CloseButton" Content="×" Width="25" Height="20"
-                            Style="{StaticResource WindowButtonStyle}"/>
-                </StackPanel>
-            </Grid>
+                    <StackPanel Orientation="Horizontal" 
+                              HorizontalAlignment="Right" 
+                              Margin="0,0,10,0">
+                        <Button x:Name="MinimizeButton" 
+                                Content="─" 
+                                Width="35" 
+                                Height="28"
+                                Style="{StaticResource ModernButtonStyle}" 
+                                Margin="0,0,5,0"/>
+                        <Button x:Name="CloseButton" 
+                                Content="×" 
+                                Width="35" 
+                                Height="28"
+                                Style="{StaticResource ModernButtonStyle}" 
+                                Margin="0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
 
             <!-- Main Content -->
-            <Grid Grid.Row="1">
-                <StackPanel Margin="20,10,20,20">
-                    <TextBlock x:Name="ActivePreset" 
-                              Text="No Preset Selected" 
-                              Style="{StaticResource PresetNameStyle}"/>
+            <Border Grid.Row="1" Margin="12">
+                <Grid>
+                    <StackPanel>
+                        <TextBlock x:Name="ActivePreset" 
+                                  Text="SELECT YOUR PRESET" 
+                                  Style="{StaticResource HeaderTextStyle}"
+                                  HorizontalAlignment="Center"
+                                  Margin="0,0,0,20"/>
 
-                    <!-- X Axis Left -->
-                    <DockPanel>
-                        <TextBlock Text="X Axis Left" Style="{StaticResource LabelTextStyle}"/>
-                        <TextBox Text="{Binding Value, ElementName=XLeftSlider, StringFormat=N0, UpdateSourceTrigger=PropertyChanged}" 
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Foreground="{StaticResource LogoGradient}"
-                                Width="50"
-                                FontSize="15"
-                                Margin="0,0,10,0"
-                                TextAlignment="Right"
-                                VerticalAlignment="Center"/>
-                        <Slider x:Name="XLeftSlider" Style="{StaticResource SliderStyle}" 
-                                Minimum="0" Maximum="1500" Value="0"
-                                Margin="0,8,25,8"/>
-                    </DockPanel>
+                        <!-- Sliders Section -->
+                        <Border Background="{StaticResource BackgroundSecondary}" 
+                                CornerRadius="8" 
+                                Padding="20" 
+                                Margin="0,0,0,15">
+                            <StackPanel>
+                                <!-- X Axis Left -->
+                                <DockPanel Margin="0,8">
+                                    <TextBlock Text="X Axis Left" 
+                                             Style="{StaticResource LabelTextStyle}"
+                                             Width="100"
+                                             VerticalAlignment="Center"/>
+                                    <TextBox Text="{Binding Value, ElementName=XLeftSlider, StringFormat=N0}"
+                                            Style="{StaticResource ModernTextBoxStyle}"
+                                            Margin="0,0,15,0"/>
+                                    <Slider x:Name="XLeftSlider" 
+                                            Style="{StaticResource ModernSliderStyle}" 
+                                            Minimum="0" Maximum="1500" Value="0"/>
+                                </DockPanel>
 
-                    <!-- X Axis Right -->
-                    <DockPanel>
-                        <TextBlock Text="X Axis Right" Style="{StaticResource LabelTextStyle}"/>
-                        <TextBox Text="{Binding Value, ElementName=XRightSlider, StringFormat=N0, UpdateSourceTrigger=PropertyChanged}" 
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Foreground="{StaticResource LogoGradient}"
-                                Width="50"
-                                FontSize="15"
-                                Margin="0,0,10,0"
-                                TextAlignment="Right"
-                                VerticalAlignment="Center"/>
-                        <Slider x:Name="XRightSlider" Style="{StaticResource SliderStyle}" 
-                                Minimum="0" Maximum="1500" Value="0"
-                                Margin="0,8,25,8"/>
-                    </DockPanel>
+                                <!-- X Axis Right -->
+                                <DockPanel Margin="0,8">
+                                    <TextBlock Text="X Axis Right" 
+                                             Style="{StaticResource LabelTextStyle}"
+                                             Width="100"
+                                             VerticalAlignment="Center"/>
+                                    <TextBox Text="{Binding Value, ElementName=XRightSlider, StringFormat=N0}"
+                                            Style="{StaticResource ModernTextBoxStyle}"
+                                            Margin="0,0,15,0"/>
+                                    <Slider x:Name="XRightSlider" 
+                                            Style="{StaticResource ModernSliderStyle}" 
+                                            Minimum="0" Maximum="1500" Value="0"/>
+                                </DockPanel>
 
-                    <!-- Y Axis Down -->
-                    <DockPanel>
-                        <TextBlock Text="Y Axis Down" Style="{StaticResource LabelTextStyle}"/>
-                        <TextBox Text="{Binding Value, ElementName=YDownSlider, StringFormat=N0, UpdateSourceTrigger=PropertyChanged}" 
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Foreground="{StaticResource LogoGradient}"
-                                Width="50"
-                                FontSize="15"
-                                Margin="0,0,10,0"
-                                TextAlignment="Right"
-                                VerticalAlignment="Center"/>
-                        <Slider x:Name="YDownSlider" Style="{StaticResource SliderStyle}" 
-                                Minimum="0" Maximum="1500" Value="0"
-                                Margin="0,8,25,8"/>
-                    </DockPanel>
+                                <!-- Y Axis Down -->
+                                <DockPanel Margin="0,8">
+                                    <TextBlock Text="Y Axis Down" 
+                                             Style="{StaticResource LabelTextStyle}"
+                                             Width="100"
+                                             VerticalAlignment="Center"/>
+                                    <TextBox Text="{Binding Value, ElementName=YDownSlider, StringFormat=N0}"
+                                            Style="{StaticResource ModernTextBoxStyle}"
+                                            Margin="0,0,15,0"/>
+                                    <Slider x:Name="YDownSlider" 
+                                            Style="{StaticResource ModernSliderStyle}" 
+                                            Minimum="0" Maximum="1500" Value="0"/>
+                                </DockPanel>
 
-                    <!-- Y Axis Up -->
-                    <DockPanel>
-                        <TextBlock Text="Y Axis Up" Style="{StaticResource LabelTextStyle}"/>
-                        <TextBox Text="{Binding Value, ElementName=YUpSlider, StringFormat=N0, UpdateSourceTrigger=PropertyChanged}" 
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Foreground="{StaticResource LogoGradient}"
-                                Width="50"
-                                FontSize="15"
-                                Margin="0,0,10,0"
-                                TextAlignment="Right"
-                                VerticalAlignment="Center"/>
-                        <Slider x:Name="YUpSlider" Style="{StaticResource SliderStyle}" 
-                                Minimum="0" Maximum="1500" Value="0"
-                                Margin="0,8,25,8"/>
-                    </DockPanel>
+                                <!-- Y Axis Up -->
+                                <DockPanel Margin="0,8">
+                                    <TextBlock Text="Y Axis Up" 
+                                             Style="{StaticResource LabelTextStyle}"
+                                             Width="100"
+                                             VerticalAlignment="Center"/>
+                                    <TextBox Text="{Binding Value, ElementName=YUpSlider, StringFormat=N0}"
+                                            Style="{StaticResource ModernTextBoxStyle}"
+                                            Margin="0,0,15,0"/>
+                                    <Slider x:Name="YUpSlider" 
+                                            Style="{StaticResource ModernSliderStyle}" 
+                                            Minimum="0" Maximum="1500" Value="0"/>
+                                </DockPanel>
+                            </StackPanel>
+                        </Border>
 
-                    <!-- Control Buttons -->
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button x:Name="LoadPreset" 
-                                Content="Load Preset" 
-                                Style="{StaticResource PresetButtonStyle}"/>
-                        <Button x:Name="MasterKeybind" 
-                                Content="Set Keybind" 
-                                Style="{StaticResource PresetButtonStyle}"/>
-                        <Button x:Name="SavePreset" 
-                                Content="Save Preset" 
-                                Style="{StaticResource PresetButtonStyle}"/>
-                        <Button x:Name="RightLeftBind"
-                                Content="Set Right + Left Click"
-                                Style="{StaticResource PresetButtonStyle}"/>
+                        <!-- Control Buttons -->
+                        <Border Background="{StaticResource BackgroundSecondary}" 
+                                CornerRadius="8" 
+                                Padding="20">
+                            <StackPanel Orientation="Horizontal" 
+                                      HorizontalAlignment="Center">
+                                <Button x:Name="LoadPreset" 
+                                        Content="LOAD PRESET" 
+                                        Style="{StaticResource ModernButtonStyle}"
+                                        Margin="8,0"/>
+                                <Button x:Name="MasterKeybind" 
+                                        Content="SET KEYBIND" 
+                                        Style="{StaticResource ModernButtonStyle}"
+                                        Margin="8,0"/>
+                                <Button x:Name="SavePreset" 
+                                        Content="SAVE PRESET" 
+                                        Style="{StaticResource ModernButtonStyle}"
+                                        Margin="8,0"/>
+                                <Button x:Name="RightLeftBind"
+                                        Content="SET R+L CLICK"
+                                        Style="{StaticResource ModernButtonStyle}"
+                                        Margin="8,0"/>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
-                </StackPanel>
-            </Grid>
+                </Grid>
+            </Border>
         </Grid>
     </Border>
 </Window>
@@ -439,7 +445,7 @@ $window.Add_MouseLeftButtonDown({ $window.DragMove() })
 
 # Keybind handler with left-click support
 $masterKeybind.Add_Click({
-    $masterKeybind.Content = "Press Key or Mouse Button..."
+    $masterKeybind.Content = "Press Key..."
     $script:waitingForInput = $true
     
     # Keyboard handler
@@ -476,7 +482,7 @@ $rightLeftBind = $window.FindName("RightLeftBind")
 $rightLeftBind.Add_Click({
     $script:masterKey = "RightLeft"
     $script:isMouseBind = $true
-    $masterKeybind.Content = "Active: L+R Click"
+    $masterKeybind.Content = "Active: R+L Click"
 })
 
 # Save Preset Handler
@@ -492,20 +498,86 @@ $savePreset.Add_Click({
     WindowStyle="None"
     AllowsTransparency="True"
     Background="Transparent">
-    <Border Background="#1E1E1E" 
-            BorderBrush="#FF1493" 
-            BorderThickness="1" 
-            CornerRadius="5">
+    <Border Background="#0A0A0A" 
+            CornerRadius="10">
+        <Border.BorderBrush>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#FF0000" Offset="0"/>
+                <GradientStop Color="#FF69B4" Offset="1"/>
+            </LinearGradientBrush>
+        </Border.BorderBrush>
+        <Border.BorderThickness>
+            <Thickness>1</Thickness>
+        </Border.BorderThickness>
         <StackPanel Margin="20">
             <TextBlock Text="Enter Preset Name:" 
-                      Foreground="White" 
+                      Foreground="#B0B0B0" 
+                      FontSize="13"
+                      FontWeight="Medium"
                       Margin="0,0,0,10"/>
-            <TextBox x:Name="PresetName" Height="25" Margin="0,0,0,20"/>
+            <TextBox x:Name="PresetName" 
+                    Height="34"
+                    Background="#141414"
+                    Foreground="#FFFFFF"
+                    BorderThickness="0"
+                    FontSize="13"
+                    Padding="10,0"
+                    VerticalContentAlignment="Center"
+                    Margin="0,0,0,20"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="SaveButton" Content="Save" Width="70" Height="25" Margin="0,0,10,0"
-                        Background="#333333" Foreground="White"/>
-                <Button x:Name="CancelButton" Content="Cancel" Width="70" Height="25"
-                        Background="#333333" Foreground="White"/>
+                <Button x:Name="SaveButton" 
+                        Content="SAVE" 
+                        Width="70" 
+                        Height="32" 
+                        Margin="0,0,10,0"
+                        Background="#141414" 
+                        Foreground="#FFFFFF"
+                        BorderThickness="0"
+                        FontSize="11"
+                        FontWeight="SemiBold">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                <GradientStop Color="#FF0000" Offset="0"/>
+                                                <GradientStop Color="#FF69B4" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button x:Name="CancelButton" 
+                        Content="CANCEL" 
+                        Width="70" 
+                        Height="32"
+                        Background="#141414" 
+                        Foreground="#FFFFFF"
+                        BorderThickness="0"
+                        FontSize="11"
+                        FontWeight="SemiBold">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                <GradientStop Color="#FF0000" Offset="0"/>
+                                                <GradientStop Color="#FF69B4" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
             </StackPanel>
         </StackPanel>
     </Border>
@@ -560,45 +632,87 @@ $loadXaml = @"
     WindowStyle="None"
     AllowsTransparency="True"
     Background="Transparent">
-    <Border Background="#1E1E1E" 
-            BorderBrush="#FF1493" 
-            BorderThickness="1" 
-            CornerRadius="5">
+    <Border Background="#0A0A0A" 
+            CornerRadius="10">
+        <Border.BorderBrush>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#FF0000" Offset="0"/>
+                <GradientStop Color="#FF69B4" Offset="1"/>
+            </LinearGradientBrush>
+        </Border.BorderBrush>
+        <Border.BorderThickness>
+            <Thickness>1</Thickness>
+        </Border.BorderThickness>
         <DockPanel Margin="20">
-            <TextBlock Text="Select Preset:" 
-                      Foreground="White" 
+            <TextBlock Text="SELECT PRESET:" 
+                      Foreground="#B0B0B0" 
+                      FontSize="13"
+                      FontWeight="Medium"
                       DockPanel.Dock="Top" 
                       Margin="0,0,0,10"/>
-        <TextBox x:Name="SearchBox" 
-                      DockPanel.Dock="Top" 
-                      Height="25" 
-                      Margin="0,0,0,10"
-                      Background="#333333"
-                      Foreground="White"
-                      BorderBrush="#FF1493"
-                      BorderThickness="1"
-                      Padding="5,0"
-                      FontSize="14"/>
+            <TextBox x:Name="SearchBox" 
+                    DockPanel.Dock="Top" 
+                    Height="25" 
+                    Margin="0,0,0,10"
+                    Background="#141414"
+                    Foreground="White"
+                    BorderBrush="#FF1493"
+                    BorderThickness="1"
+                    Padding="5,0"/>
             <StackPanel DockPanel.Dock="Bottom" 
                       Orientation="Horizontal" 
                       HorizontalAlignment="Right" 
                       Margin="0,10,0,0">
-                <Button x:Name="RenameButton" Content="Rename" Width="70" Height="25" Margin="0,0,10,0"
-                        Background="#333333" Foreground="White"/>
-                <Button x:Name="DuplicateButton" Content="Duplicate" Width="70" Height="25" Margin="0,0,10,0"
-                        Background="#333333" Foreground="White"/>
-                <Button x:Name="DeleteButton" Content="Delete" Width="70" Height="25" Margin="0,0,10,0"
-                        Background="#333333" Foreground="White"/>
-                <Button x:Name="LoadButton" Content="Load" Width="70" Height="25" Margin="0,0,10,0"
-                        Background="#333333" Foreground="White"/>
-                <Button x:Name="CancelButton" Content="Cancel" Width="70" Height="25"
-                        Background="#333333" Foreground="White"/>
+                <Button x:Name="RenameButton" Content="RENAME" Width="70" Height="25" Margin="0,0,10,0"
+                        Background="#141414" Foreground="White" BorderThickness="1">
+                    <Button.BorderBrush>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#FF0000" Offset="0"/>
+                            <GradientStop Color="#FF69B4" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Button.BorderBrush>
+                </Button>
+                <Button x:Name="DuplicateButton" Content="DUPLICATE" Width="70" Height="25" Margin="0,0,10,0"
+                        Background="#141414" Foreground="White" BorderThickness="1">
+                    <Button.BorderBrush>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#FF0000" Offset="0"/>
+                            <GradientStop Color="#FF69B4" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Button.BorderBrush>
+                </Button>
+                <Button x:Name="DeleteButton" Content="DELETE" Width="70" Height="25" Margin="0,0,10,0"
+                        Background="#141414" Foreground="White" BorderThickness="1">
+                    <Button.BorderBrush>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#FF0000" Offset="0"/>
+                            <GradientStop Color="#FF69B4" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Button.BorderBrush>
+                </Button>
+                <Button x:Name="LoadButton" Content="LOAD" Width="70" Height="25" Margin="0,0,10,0"
+                        Background="#141414" Foreground="White" BorderThickness="1">
+                    <Button.BorderBrush>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#FF0000" Offset="0"/>
+                            <GradientStop Color="#FF69B4" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Button.BorderBrush>
+                </Button>
+                <Button x:Name="CancelButton" Content="CANCEL" Width="70" Height="25"
+                        Background="#141414" Foreground="White" BorderThickness="1">
+                    <Button.BorderBrush>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#FF0000" Offset="0"/>
+                            <GradientStop Color="#FF69B4" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Button.BorderBrush>
+                </Button>
             </StackPanel>
             <ListBox x:Name="PresetList" 
-                     Background="Transparent" 
+                     Background="#141414" 
                      BorderBrush="#FF1493"
-                     Foreground="White"
-                     FontSize="14">
+                     Foreground="White">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="Foreground" Value="White"/>
@@ -613,10 +727,10 @@ $loadXaml = @"
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Background" Value="#3F3F3F"/>
+                                            <Setter Property="Background" Value="#2F2F2F"/>
                                         </Trigger>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="#2F2F2F"/>
+                                            <Setter Property="Background" Value="#1F1F1F"/>
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
