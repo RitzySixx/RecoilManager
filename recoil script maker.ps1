@@ -1,3 +1,26 @@
+# Define the GitHub raw file URL
+$githubScriptUrl = "https://raw.githubusercontent.com/RitzySixx/MouseScript111/refs/heads/main/recoil%20script%20maker.ps1"
+
+# Get the current script path
+$currentScript = $MyInvocation.MyCommand.Path
+
+# Check for updates
+try {
+    $latestVersion = ((Invoke-WebRequest -Uri $githubScriptUrl).Content).Trim()
+    $currentVersion = (Get-Content -Path $currentScript -Raw).Trim()
+
+    if ($latestVersion -ne $currentVersion) {
+        Write-Host "Update found! Grabbing latest version..." -ForegroundColor Green
+        $latestVersion | Out-File -FilePath $currentScript -Force -Encoding UTF8
+        Write-Host "Script will restart once Update is Complete..." -ForegroundColor Green
+        Start-Sleep -Seconds 10
+        Start-Process powershell.exe -ArgumentList "-NoExit -File `"$currentScript`""
+        exit
+    }
+} catch {
+    Write-Host "Unable to check for updates. Continuing with current version..." -ForegroundColor Yellow
+}
+
 # Load required assemblies
 Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.Application]::EnableVisualStyles()
@@ -6,6 +29,17 @@ Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName PresentationCore
 Add-Type -AssemblyName WindowsBase
+
+function Test-MouseOverWindow {
+    $point = [System.Windows.Forms.Cursor]::Position
+    $windowRect = New-Object System.Drawing.Rectangle(
+        [int]$window.Left, 
+        [int]$window.Top, 
+        [int]$window.Width, 
+        [int]$window.Height
+    )
+    return $windowRect.Contains($point)
+}
 
 # Add mouse button codes
 $mouseButtonCodes = @{
@@ -290,29 +324,69 @@ if (Test-Path $presetPath) {
                     <!-- X Axis Left -->
                     <DockPanel>
                         <TextBlock Text="X Axis Left" Style="{StaticResource LabelTextStyle}"/>
-                        <TextBlock Text="{Binding Value, ElementName=XLeftSlider, StringFormat=N0}" Style="{StaticResource ValueTextStyle}"/>
-                        <Slider x:Name="XLeftSlider" Style="{StaticResource SliderStyle}" Minimum="0" Maximum="1500" Value="0"/>
+                        <TextBox Text="{Binding Value, ElementName=XLeftSlider, StringFormat=N0, UpdateSourceTrigger=PropertyChanged}" 
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Foreground="{StaticResource LogoGradient}"
+                                Width="50"
+                                FontSize="15"
+                                Margin="0,0,10,0"
+                                TextAlignment="Right"
+                                VerticalAlignment="Center"/>
+                        <Slider x:Name="XLeftSlider" Style="{StaticResource SliderStyle}" 
+                                Minimum="0" Maximum="1500" Value="0"
+                                Margin="0,8,25,8"/>
                     </DockPanel>
 
                     <!-- X Axis Right -->
                     <DockPanel>
                         <TextBlock Text="X Axis Right" Style="{StaticResource LabelTextStyle}"/>
-                        <TextBlock Text="{Binding Value, ElementName=XRightSlider, StringFormat=N0}" Style="{StaticResource ValueTextStyle}"/>
-                        <Slider x:Name="XRightSlider" Style="{StaticResource SliderStyle}" Minimum="0" Maximum="1500" Value="0"/>
+                        <TextBox Text="{Binding Value, ElementName=XRightSlider, StringFormat=N0, UpdateSourceTrigger=PropertyChanged}" 
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Foreground="{StaticResource LogoGradient}"
+                                Width="50"
+                                FontSize="15"
+                                Margin="0,0,10,0"
+                                TextAlignment="Right"
+                                VerticalAlignment="Center"/>
+                        <Slider x:Name="XRightSlider" Style="{StaticResource SliderStyle}" 
+                                Minimum="0" Maximum="1500" Value="0"
+                                Margin="0,8,25,8"/>
                     </DockPanel>
 
                     <!-- Y Axis Down -->
                     <DockPanel>
                         <TextBlock Text="Y Axis Down" Style="{StaticResource LabelTextStyle}"/>
-                        <TextBlock Text="{Binding Value, ElementName=YDownSlider, StringFormat=N0}" Style="{StaticResource ValueTextStyle}"/>
-                        <Slider x:Name="YDownSlider" Style="{StaticResource SliderStyle}" Minimum="0" Maximum="1500" Value="0"/>
+                        <TextBox Text="{Binding Value, ElementName=YDownSlider, StringFormat=N0, UpdateSourceTrigger=PropertyChanged}" 
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Foreground="{StaticResource LogoGradient}"
+                                Width="50"
+                                FontSize="15"
+                                Margin="0,0,10,0"
+                                TextAlignment="Right"
+                                VerticalAlignment="Center"/>
+                        <Slider x:Name="YDownSlider" Style="{StaticResource SliderStyle}" 
+                                Minimum="0" Maximum="1500" Value="0"
+                                Margin="0,8,25,8"/>
                     </DockPanel>
 
                     <!-- Y Axis Up -->
                     <DockPanel>
                         <TextBlock Text="Y Axis Up" Style="{StaticResource LabelTextStyle}"/>
-                        <TextBlock Text="{Binding Value, ElementName=YUpSlider, StringFormat=N0}" Style="{StaticResource ValueTextStyle}"/>
-                        <Slider x:Name="YUpSlider" Style="{StaticResource SliderStyle}" Minimum="0" Maximum="1500" Value="0"/>
+                        <TextBox Text="{Binding Value, ElementName=YUpSlider, StringFormat=N0, UpdateSourceTrigger=PropertyChanged}" 
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Foreground="{StaticResource LogoGradient}"
+                                Width="50"
+                                FontSize="15"
+                                Margin="0,0,10,0"
+                                TextAlignment="Right"
+                                VerticalAlignment="Center"/>
+                        <Slider x:Name="YUpSlider" Style="{StaticResource SliderStyle}" 
+                                Minimum="0" Maximum="1500" Value="0"
+                                Margin="0,8,25,8"/>
                     </DockPanel>
 
                     <!-- Control Buttons -->
@@ -402,7 +476,7 @@ $rightLeftBind = $window.FindName("RightLeftBind")
 $rightLeftBind.Add_Click({
     $script:masterKey = "RightLeft"
     $script:isMouseBind = $true
-    $masterKeybind.Content = "Active: Left + Right Click"
+    $masterKeybind.Content = "Active: L+R Click"
 })
 
 # Save Preset Handler
@@ -495,6 +569,16 @@ $loadXaml = @"
                       Foreground="White" 
                       DockPanel.Dock="Top" 
                       Margin="0,0,0,10"/>
+        <TextBox x:Name="SearchBox" 
+                      DockPanel.Dock="Top" 
+                      Height="25" 
+                      Margin="0,0,0,10"
+                      Background="#333333"
+                      Foreground="White"
+                      BorderBrush="#FF1493"
+                      BorderThickness="1"
+                      Padding="5,0"
+                      FontSize="14"/>
             <StackPanel DockPanel.Dock="Bottom" 
                       Orientation="Horizontal" 
                       HorizontalAlignment="Right" 
@@ -510,8 +594,37 @@ $loadXaml = @"
                 <Button x:Name="CancelButton" Content="Cancel" Width="70" Height="25"
                         Background="#333333" Foreground="White"/>
             </StackPanel>
-            <ListBox x:Name="PresetList" Background="Transparent" 
-                    BorderBrush="#FF1493"/>
+            <ListBox x:Name="PresetList" 
+                     Background="Transparent" 
+                     BorderBrush="#FF1493"
+                     Foreground="White"
+                     FontSize="14">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Padding" Value="5"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Border Background="{TemplateBinding Background}"
+                                            BorderThickness="0">
+                                        <ContentPresenter/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="#3F3F3F"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#2F2F2F"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
         </DockPanel>
     </Border>
 </Window>
@@ -527,10 +640,31 @@ $loadXaml = @"
     $duplicateButton = $loadWindow.FindName("DuplicateButton")
     $presetList = $loadWindow.FindName("PresetList")
     $renameButton = $loadWindow.FindName("RenameButton")
+    $searchBox = $loadWindow.FindName("SearchBox")
     
     $presets | ForEach-Object {
         $presetList.Items.Add($_.BaseName)
     }
+
+    # Store original items for filtering
+$script:originalItems = $presets | ForEach-Object { $_.BaseName }
+
+# Add items to list
+$script:originalItems | ForEach-Object {
+    $presetList.Items.Add($_)
+}
+
+# Add search functionality
+$searchBox.Add_TextChanged({
+    $searchText = $searchBox.Text.ToLower()
+    $presetList.Items.Clear()
+    
+    $script:originalItems | Where-Object {
+        $_.ToLower() -match [regex]::Escape($searchText)
+    } | ForEach-Object {
+        $presetList.Items.Add($_)
+    }
+})
 
         # Delete button handler
     $deleteButton.Add_Click({
@@ -680,38 +814,42 @@ $window.Add_StateChanged({
 })
 
 $timer.Add_Tick({
-    $moveX = 0
-    $moveY = 0
-    
-    # Check if keybind is pressed
-    if ($script:masterKey -eq "RightLeft") {
-        $isPressed = [MouseMover]::GetAsyncKeyState(0x02) -and [MouseMover]::GetAsyncKeyState(0x01)
-    } elseif ($script:isMouseBind) {
-        $mouseButton = switch ($script:masterKey) {
-            "Left" { 0x01 }
-            "Right" { 0x02 }
-            "Middle" { 0x04 }
-            "XButton1" { 0x05 }  # First side button
-            "XButton2" { 0x06 }  # Second side button
-            "XButton3" { 0x07 }  # Third side button
-            "XButton4" { 0x08 }  # Fourth side button
-        }
-        $isPressed = [MouseMover]::GetAsyncKeyState($mouseButton)
-    } else {
-        $virtualKey = [System.Windows.Forms.Keys]::$script:masterKey
-        $isPressed = [MouseMover]::GetAsyncKeyState($virtualKey)
-    }
-    
-    if ($isPressed) {
-        # Calculate movement based on slider values
-        $moveX = [int](($XRightSlider.Value - $XLeftSlider.Value) / 10)
-        $moveY = [int](($YDownSlider.Value - $YUpSlider.Value) / 10)
+    # Only proceed if mouse is NOT over the window
+    if (-not (Test-MouseOverWindow)) {
+        $moveX = 0
+        $moveY = 0
         
-        if ($moveX -ne 0 -or $moveY -ne 0) {
-            [MouseMover]::mouse_event(0x0001, $moveX, $moveY, 0, 0)
+        # Check if keybind is pressed
+        if ($script:masterKey -eq "RightLeft") {
+            $isPressed = [MouseMover]::GetAsyncKeyState(0x02) -and [MouseMover]::GetAsyncKeyState(0x01)
+        } elseif ($script:isMouseBind) {
+            $mouseButton = switch ($script:masterKey) {
+                "Left" { 0x01 }
+                "Right" { 0x02 }
+                "Middle" { 0x04 }
+                "XButton1" { 0x05 }
+                "XButton2" { 0x06 }
+                "XButton3" { 0x07 }
+                "XButton4" { 0x08 }
+            }
+            $isPressed = [MouseMover]::GetAsyncKeyState($mouseButton)
+        } else {
+            $virtualKey = [System.Windows.Forms.Keys]::$script:masterKey
+            $isPressed = [MouseMover]::GetAsyncKeyState($virtualKey)
+        }
+        
+        if ($isPressed) {
+            $moveX = [int](($XRightSlider.Value - $XLeftSlider.Value) / 10)
+            $moveY = [int](($YDownSlider.Value - $YUpSlider.Value) / 10)
+            
+            if ($moveX -ne 0 -or $moveY -ne 0) {
+                [MouseMover]::mouse_event(0x0001, $moveX, $moveY, 0, 0)
+            }
         }
     }
 })
 
+
+$timer.Start()
 # Show window
 $window.ShowDialog()
