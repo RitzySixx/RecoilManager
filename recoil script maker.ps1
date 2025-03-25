@@ -615,7 +615,8 @@ $saveButton.Add_Click({
 
 # Load Preset Handler
 $loadPreset.Add_Click({
-    $presets = Get-ChildItem -Path $presetPath -Filter "*.json"
+    # Get presets only from C:\Recoil Presets
+    $presets = Get-ChildItem -Path "C:\Recoil Presets" -Filter "*.json"
     if ($presets.Count -eq 0) {
         [System.Windows.Forms.MessageBox]::Show("No presets found!", "Load Preset")
         return
@@ -744,23 +745,20 @@ $loadXaml = @"
 </Window>
 "@
 
- $reader = [System.Xml.XmlReader]::Create((New-Object System.IO.StringReader($loadXaml)))
-    $loadWindow = [Windows.Markup.XamlReader]::Load($reader)
-    $loadWindow.Owner = $window
-    
-    $loadButton = $loadWindow.FindName("LoadButton")
-    $cancelButton = $loadWindow.FindName("CancelButton")
-    $deleteButton = $loadWindow.FindName("DeleteButton")
-    $duplicateButton = $loadWindow.FindName("DuplicateButton")
-    $presetList = $loadWindow.FindName("PresetList")
-    $renameButton = $loadWindow.FindName("RenameButton")
-    $searchBox = $loadWindow.FindName("SearchBox")
-    
-    $presets | ForEach-Object {
-        $presetList.Items.Add($_.BaseName)
-    }
+$reader = [System.Xml.XmlReader]::Create((New-Object System.IO.StringReader($loadXaml)))
+$loadWindow = [Windows.Markup.XamlReader]::Load($reader)
+$loadWindow.Owner = $window
 
-    # Store original items for filtering
+# Get all window controls
+$loadButton = $loadWindow.FindName("LoadButton")
+$cancelButton = $loadWindow.FindName("CancelButton")
+$deleteButton = $loadWindow.FindName("DeleteButton")
+$duplicateButton = $loadWindow.FindName("DuplicateButton")
+$presetList = $loadWindow.FindName("PresetList")
+$renameButton = $loadWindow.FindName("RenameButton")
+$searchBox = $loadWindow.FindName("SearchBox")
+
+# Store original items for filtering
 $script:originalItems = $presets | ForEach-Object { $_.BaseName }
 
 # Add items to list
@@ -781,36 +779,36 @@ $searchBox.Add_TextChanged({
 })
 
         # Delete button handler
-    $deleteButton.Add_Click({
-        $selectedPreset = $presetList.SelectedItem
-        if ($selectedPreset) {
-            $result = [System.Windows.MessageBox]::Show(
-                "Are you sure you want to delete this preset?",
-                "Confirm Delete",
-                [System.Windows.MessageBoxButton]::YesNo
-            )
-            if ($result -eq [System.Windows.MessageBoxResult]::Yes) {
-                Remove-Item (Join-Path $presetPath "$selectedPreset.json")
-                $presetList.Items.Remove($selectedPreset)
+
+        $deleteButton.Add_Click({
+            $selectedPreset = $presetList.SelectedItem
+            if ($selectedPreset) {
+                $result = [System.Windows.MessageBox]::Show(
+                    "Are you sure you want to delete this preset?",
+                    "Confirm Delete",
+                    [System.Windows.MessageBoxButton]::YesNo
+                )
+                if ($result -eq [System.Windows.MessageBoxResult]::Yes) {
+                    Remove-Item (Join-Path "C:\Recoil Presets" "$selectedPreset.json")
+                    $presetList.Items.Remove($selectedPreset)
+                }
             }
-        }
-    })
+        })
     
-    # Duplicate button handler
-    $duplicateButton.Add_Click({
-        $selectedPreset = $presetList.SelectedItem
-        if ($selectedPreset) {
-            $newName = "${selectedPreset}_copy"
-            $counter = 1
-            while (Test-Path (Join-Path $presetPath "$newName.json")) {
-                $newName = "${selectedPreset}_copy$counter"
-                $counter++
+        $duplicateButton.Add_Click({
+            $selectedPreset = $presetList.SelectedItem
+            if ($selectedPreset) {
+                $newName = "${selectedPreset}_copy"
+                $counter = 1
+                while (Test-Path (Join-Path "C:\Recoil Presets" "$newName.json")) {
+                    $newName = "${selectedPreset}_copy$counter"
+                    $counter++
+                }
+                
+                Copy-Item (Join-Path "C:\Recoil Presets" "$selectedPreset.json") (Join-Path "C:\Recoil Presets" "$newName.json")
+                $presetList.Items.Add($newName)
             }
-            
-            Copy-Item (Join-Path $presetPath "$selectedPreset.json") (Join-Path $presetPath "$newName.json")
-            $presetList.Items.Add($newName)
-        }
-    })
+        })
     
     $renameButton.Add_Click({
     $selectedPreset = $presetList.SelectedItem
@@ -884,7 +882,7 @@ $searchBox.Add_TextChanged({
     $loadButton.Add_Click({
         $selectedPreset = $presetList.SelectedItem
         if ($selectedPreset) {
-            $presetFile = Join-Path $presetPath "$selectedPreset.json"
+            $presetFile = Join-Path "C:\Recoil Presets" "$selectedPreset.json"
             $preset = Get-Content $presetFile | ConvertFrom-Json
             
             $XLeftSlider.Value = $preset.XLeft
