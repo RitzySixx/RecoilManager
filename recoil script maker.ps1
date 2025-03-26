@@ -417,12 +417,14 @@ if (Test-Path $presetPath) {
                                              Style="{StaticResource LabelTextStyle}"
                                              Width="100"
                                              VerticalAlignment="Center"/>
-                                    <TextBox Text="{Binding Value, ElementName=XLeftSlider, StringFormat=N0}"
+                                    <TextBox Text="{Binding Value, ElementName=XLeftSlider, StringFormat=N1}"
                                             Style="{StaticResource ModernTextBoxStyle}"
                                             Margin="0,0,15,0"/>
                                     <Slider x:Name="XLeftSlider" 
                                             Style="{StaticResource ModernSliderStyle}" 
-                                            Minimum="0" Maximum="1500" Value="0"/>
+                                            Minimum="0" Maximum="1500" Value="0"
+                                            TickFrequency="0.1"
+                                            IsSnapToTickEnabled="True"/>
                                 </DockPanel>
 
                                 <!-- X Axis Right -->
@@ -431,12 +433,14 @@ if (Test-Path $presetPath) {
                                              Style="{StaticResource LabelTextStyle}"
                                              Width="100"
                                              VerticalAlignment="Center"/>
-                                    <TextBox Text="{Binding Value, ElementName=XRightSlider, StringFormat=N0}"
+                                    <TextBox Text="{Binding Value, ElementName=XRightSlider, StringFormat=N1}"
                                             Style="{StaticResource ModernTextBoxStyle}"
                                             Margin="0,0,15,0"/>
                                     <Slider x:Name="XRightSlider" 
                                             Style="{StaticResource ModernSliderStyle}" 
-                                            Minimum="0" Maximum="1500" Value="0"/>
+                                            Minimum="0" Maximum="1500" Value="0"
+                                            TickFrequency="0.1"
+                                            IsSnapToTickEnabled="True"/>
                                 </DockPanel>
 
                                 <!-- Y Axis Down -->
@@ -445,12 +449,14 @@ if (Test-Path $presetPath) {
                                              Style="{StaticResource LabelTextStyle}"
                                              Width="100"
                                              VerticalAlignment="Center"/>
-                                    <TextBox Text="{Binding Value, ElementName=YDownSlider, StringFormat=N0}"
+                                    <TextBox Text="{Binding Value, ElementName=YDownSlider, StringFormat=N1}"
                                             Style="{StaticResource ModernTextBoxStyle}"
                                             Margin="0,0,15,0"/>
                                     <Slider x:Name="YDownSlider" 
                                             Style="{StaticResource ModernSliderStyle}" 
-                                            Minimum="0" Maximum="1500" Value="0"/>
+                                            Minimum="0" Maximum="1500" Value="0"
+                                            TickFrequency="0.1"
+                                            IsSnapToTickEnabled="True"/>
                                 </DockPanel>
 
                                 <!-- Y Axis Up -->
@@ -459,12 +465,14 @@ if (Test-Path $presetPath) {
                                              Style="{StaticResource LabelTextStyle}"
                                              Width="100"
                                              VerticalAlignment="Center"/>
-                                    <TextBox Text="{Binding Value, ElementName=YUpSlider, StringFormat=N0}"
+                                    <TextBox Text="{Binding Value, ElementName=YUpSlider, StringFormat=N1}"
                                             Style="{StaticResource ModernTextBoxStyle}"
                                             Margin="0,0,15,0"/>
                                     <Slider x:Name="YUpSlider" 
                                             Style="{StaticResource ModernSliderStyle}" 
-                                            Minimum="0" Maximum="1500" Value="0"/>
+                                            Minimum="0" Maximum="1500" Value="0"
+                                            TickFrequency="0.1"
+                                            IsSnapToTickEnabled="True"/>
                                 </DockPanel>
                             </StackPanel>
                         </Border>
@@ -545,7 +553,10 @@ if ($savedSettings) {
 # Add TextChanged handlers
 $DPIInput.Add_TextChanged({
     if ([double]::TryParse($DPIInput.Text, [ref]$null)) {
-        Save-Settings -dpi $DPIInput.Text -sens $SensInput.Text -multiplier $MultiplierInput.Text
+        $value = [double]$DPIInput.Text
+        if ($value -gt 0) {
+            Save-Settings -dpi $DPIInput.Text -sens $SensInput.Text -multiplier $MultiplierInput.Text
+        }
     }
 })
 
@@ -1044,20 +1055,22 @@ $window.Add_StateChanged({
 })
 
 $timer.Add_Tick({
-    # Only proceed if mouse is NOT over the window
     if (-not (Test-MouseOverWindow)) {
         $moveX = 0
         $moveY = 0
         
-        # Get current sensitivity settings
         $currentDPI = [double]$DPIInput.Text
         $currentSens = [double]$SensInput.Text
         $currentMultiplier = [double]$MultiplierInput.Text
+
+        # Validate sensitivity inputs
+        if ($currentDPI -le 0 -or $currentSens -le 0 -or $currentMultiplier -le 0) {
+            throw "Sensitivity values must be greater than 0"
+        }
         
-        # Calculate sensitivity scaling
-        $sensitivityScale = (800 / $currentDPI) * (50 / $currentSens) * (0.02 / $currentMultiplier)
+        # Updated sensitivity scaling formula
+        $sensitivityScale = [Math]::Round(($currentDPI * $currentSens * $currentMultiplier) / (800 * 50 * 0.02), 8)
         
-        # Check if keybind is pressed
         if ($script:masterKey -eq "RightLeft") {
             $isPressed = [MouseMover]::GetAsyncKeyState(0x02) -and [MouseMover]::GetAsyncKeyState(0x01)
         } elseif ($script:isMouseBind) {
@@ -1077,21 +1090,20 @@ $timer.Add_Tick({
         }
         
         if ($isPressed) {
-            # Calculate base movement
-            $baseX = [int](($XRightSlider.Value - $XLeftSlider.Value) / 10)
-            $baseY = [int](($YDownSlider.Value - $YUpSlider.Value) / 10)
+            # Enhanced movement calculations
+            $baseX = [Math]::Round(($XRightSlider.Value - $XLeftSlider.Value) * $sensitivityScale, 8)
+            $baseY = [Math]::Round(($YDownSlider.Value - $YUpSlider.Value) * $sensitivityScale, 8)
             
-            # Apply sensitivity scaling
-            $moveX = [int]($baseX * $sensitivityScale)
-            $moveY = [int]($baseY * $sensitivityScale)
+            # Smooth movement with decimal precision
+            $moveX = [math]::Round($baseX / 10, 2)
+            $moveY = [math]::Round($baseY / 10, 2)
             
             if ($moveX -ne 0 -or $moveY -ne 0) {
-                [MouseMover]::mouse_event(0x0001, $moveX, $moveY, 0, 0)
+                [MouseMover]::mouse_event(0x0001, [int]$moveX, [int]$moveY, 0, 0)
             }
         }
     }
 })
 
 $timer.Start()
-# Show window
 $window.ShowDialog()
