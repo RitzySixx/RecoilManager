@@ -41,6 +41,49 @@ function Test-MouseOverWindow {
     return $windowRect.Contains($point)
 }
 
+# Conversion functions
+function Convert-RecoilValue {
+    param (
+        [double]$recoilValue,
+        [double]$sourceDPI,
+        [double]$sourceSens,
+        [double]$sourceMultiplier,
+        [double]$targetDPI,
+        [double]$targetSens,
+        [double]$targetMultiplier
+    )
+    
+    $sourceTotal = $sourceDPI * $sourceSens * $sourceMultiplier
+    $targetTotal = $targetDPI * $targetSens * $targetMultiplier
+    
+    return $recoilValue * ($sourceTotal / $targetTotal)
+}
+
+function Save-Settings {
+    param (
+        [string]$dpi,
+        [string]$sens,
+        [string]$multiplier
+    )
+    
+    $settingsXml = [xml]"<Settings><DPI>$dpi</DPI><Sensitivity>$sens</Sensitivity><Multiplier>$multiplier</Multiplier></Settings>"
+    $settingsPath = Join-Path "C:\Recoil Presets" "settings.xaml"
+    $settingsXml.Save($settingsPath)
+}
+
+function Load-Settings {
+    $settingsPath = Join-Path "C:\Recoil Presets" "settings.xaml"
+    if (Test-Path $settingsPath) {
+        [xml]$settings = Get-Content $settingsPath
+        return @{
+            DPI = $settings.Settings.DPI
+            Sensitivity = $settings.Settings.Sensitivity
+            Multiplier = $settings.Settings.Multiplier
+        }
+    }
+    return $null
+}
+
 # Add mouse button codes
 $mouseButtonCodes = @{
     "Left" = 0x01
@@ -121,7 +164,7 @@ if (Test-Path $presetPath) {
     AllowsTransparency="True"
     Background="Transparent"
     Width="675"
-    Height="475"
+    Height="600"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
     Topmost="True">
@@ -321,6 +364,47 @@ if (Test-Path $presetPath) {
                                   HorizontalAlignment="Center"
                                   Margin="0,0,0,20"/>
 
+                <!-- Settings Section -->
+                <Border Background="{StaticResource BackgroundSecondary}" 
+                        CornerRadius="8" 
+                        Padding="20" 
+                        Margin="0,0,0,15">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <StackPanel Grid.Column="0" Margin="5">
+                            <TextBlock Text="DPI" 
+                                    Style="{StaticResource LabelTextStyle}"
+                                    Margin="0,0,0,5"/>
+                            <TextBox x:Name="DPIInput"
+                                    Style="{StaticResource ModernTextBoxStyle}"
+                                    Text="800"/>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Column="1" Margin="5">
+                            <TextBlock Text="In-Game Sens" 
+                                    Style="{StaticResource LabelTextStyle}"
+                                    Margin="0,0,0,5"/>
+                            <TextBox x:Name="SensInput"
+                                    Style="{StaticResource ModernTextBoxStyle}"
+                                    Text="50"/>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Column="2" Margin="5">
+                            <TextBlock Text="Multiplier" 
+                                    Style="{StaticResource LabelTextStyle}"
+                                    Margin="0,0,0,5"/>
+                            <TextBox x:Name="MultiplierInput"
+                                    Style="{StaticResource ModernTextBoxStyle}"
+                                    Text="0.02"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>         
+
                         <!-- Sliders Section -->
                         <Border Background="{StaticResource BackgroundSecondary}" 
                                 CornerRadius="8" 
@@ -432,6 +516,13 @@ $XLeftSlider = $window.FindName("XLeftSlider")
 $XRightSlider = $window.FindName("XRightSlider")
 $YDownSlider = $window.FindName("YDownSlider")
 $YUpSlider = $window.FindName("YUpSlider")
+$DPIInput = $window.FindName("DPIInput")
+$SensInput = $window.FindName("SensInput")
+$MultiplierInput = $window.FindName("MultiplierInput")
+
+$DPIInput.Text = "800"
+$SensInput.Text = "50"
+$MultiplierInput.Text = "0.02"
 
 # Initialize variables
 $script:masterKey = $null
@@ -442,6 +533,33 @@ $script:isMouseBind = $false
 $closeButton.Add_Click({ $window.Close() })
 $minimizeButton.Add_Click({ $window.WindowState = "Minimized" })
 $window.Add_MouseLeftButtonDown({ $window.DragMove() })
+
+# Load saved settings
+$savedSettings = Load-Settings
+if ($savedSettings) {
+    $DPIInput.Text = $savedSettings.DPI
+    $SensInput.Text = $savedSettings.Sensitivity  
+    $MultiplierInput.Text = $savedSettings.Multiplier
+}
+
+# Add TextChanged handlers
+$DPIInput.Add_TextChanged({
+    if ([double]::TryParse($DPIInput.Text, [ref]$null)) {
+        Save-Settings -dpi $DPIInput.Text -sens $SensInput.Text -multiplier $MultiplierInput.Text
+    }
+})
+
+$SensInput.Add_TextChanged({
+    if ([double]::TryParse($SensInput.Text, [ref]$null)) {
+        Save-Settings -dpi $DPIInput.Text -sens $SensInput.Text -multiplier $MultiplierInput.Text
+    }
+})
+
+$MultiplierInput.Add_TextChanged({
+    if ([double]::TryParse($MultiplierInput.Text, [ref]$null)) {
+        Save-Settings -dpi $DPIInput.Text -sens $SensInput.Text -multiplier $MultiplierInput.Text
+    }
+})
 
 # Keybind handler with left-click support
 $masterKeybind.Add_Click({
@@ -931,6 +1049,14 @@ $timer.Add_Tick({
         $moveX = 0
         $moveY = 0
         
+        # Get current sensitivity settings
+        $currentDPI = [double]$DPIInput.Text
+        $currentSens = [double]$SensInput.Text
+        $currentMultiplier = [double]$MultiplierInput.Text
+        
+        # Calculate sensitivity scaling
+        $sensitivityScale = (800 / $currentDPI) * (50 / $currentSens) * (0.02 / $currentMultiplier)
+        
         # Check if keybind is pressed
         if ($script:masterKey -eq "RightLeft") {
             $isPressed = [MouseMover]::GetAsyncKeyState(0x02) -and [MouseMover]::GetAsyncKeyState(0x01)
@@ -951,8 +1077,13 @@ $timer.Add_Tick({
         }
         
         if ($isPressed) {
-            $moveX = [int](($XRightSlider.Value - $XLeftSlider.Value) / 10)
-            $moveY = [int](($YDownSlider.Value - $YUpSlider.Value) / 10)
+            # Calculate base movement
+            $baseX = [int](($XRightSlider.Value - $XLeftSlider.Value) / 10)
+            $baseY = [int](($YDownSlider.Value - $YUpSlider.Value) / 10)
+            
+            # Apply sensitivity scaling
+            $moveX = [int]($baseX * $sensitivityScale)
+            $moveY = [int]($baseY * $sensitivityScale)
             
             if ($moveX -ne 0 -or $moveY -ne 0) {
                 [MouseMover]::mouse_event(0x0001, $moveX, $moveY, 0, 0)
@@ -960,7 +1091,6 @@ $timer.Add_Tick({
         }
     }
 })
-
 
 $timer.Start()
 # Show window
