@@ -43,35 +43,31 @@ if (-not (Test-Path $presetPath)) {
     AllowsTransparency="True"
     Background="Transparent"
     ResizeMode="NoResize">
-    
+
     <Window.Resources>
-<Style x:Key="ComboBoxStyle" TargetType="ComboBox">
-    <Setter Property="Background" Value="#413e3e"/>
-    <Setter Property="Foreground" Value="#000000"/>
-    <Setter Property="BorderBrush" Value="#00BFFF"/>
-    <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Height" Value="28"/>
-    <Setter Property="FontSize" Value="12"/>
-    <Style.Resources>
-        <Style TargetType="ComboBoxItem">
+        <Style x:Key="ComboBoxStyle" TargetType="ComboBox">
             <Setter Property="Background" Value="#413e3e"/>
             <Setter Property="Foreground" Value="#000000"/>
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#5a5656"/>
+            <Setter Property="BorderBrush" Value="#00BFFF"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Style.Resources>
+                <Style TargetType="ComboBoxItem">
+                    <Setter Property="Background" Value="#413e3e"/>
                     <Setter Property="Foreground" Value="#000000"/>
-                </Trigger>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#504c4c"/>
-                </Trigger>
-            </Style.Triggers>
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="#5a5656"/>
+                            <Setter Property="Foreground" Value="#000000"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#504c4c"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Style.Resources>
         </Style>
-        <Style TargetType="ScrollViewer">
-            <Setter Property="Background" Value="#413e3e"/>
-        </Style>
-    </Style.Resources>
-</Style>
-        
         <Style x:Key="TextBoxStyle" TargetType="TextBox">
             <Setter Property="Background" Value="#413e3e"/>
             <Setter Property="Foreground" Value="#00acb3"/>
@@ -80,14 +76,14 @@ if (-not (Test-Path $presetPath)) {
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="FontSize" Value="12"/>
         </Style>
-        
+
         <Style x:Key="SliderStyle" TargetType="Slider">
             <Setter Property="Minimum" Value="0"/>
             <Setter Property="Maximum" Value="50"/>
-            <Setter Property="TickFrequency" Value="1"/>
+            <Setter Property="TickFrequency" Value="0.1"/>
             <Setter Property="IsSnapToTickEnabled" Value="True"/>
         </Style>
-        
+
         <Style x:Key="ButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#252525"/>
             <Setter Property="Foreground" Value="White"/>
@@ -117,7 +113,6 @@ if (-not (Test-Path $presetPath)) {
             </Style.Triggers>
         </Style>
     </Window.Resources>
-    
     <Border Background="#0A0A0A" 
             CornerRadius="10"
             BorderBrush="#333333"
@@ -144,24 +139,23 @@ if (-not (Test-Path $presetPath)) {
                         Foreground="White"
                         BorderThickness="0"/>
             </StackPanel>
-            
+
             <!-- Main Content -->
             <StackPanel Margin="15,40,15,15">
                 <!-- Header -->
                 <TextBlock Text="R E C O I L  C O N T R O L"
-                            Foreground="#00BFFF"
+                           Foreground="#00BFFF"
                            FontSize="24"
                            FontWeight="Bold"
                            HorizontalAlignment="Center"
                            Margin="0,0,0,10"/>
-                
                 <!-- Main Settings Section -->
                 <Grid Margin="0,0,0,15">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    
+
                     <Border Background="#141414"
                              CornerRadius="8"
                              Padding="15"
@@ -169,27 +163,27 @@ if (-not (Test-Path $presetPath)) {
                             Grid.Column="0">
                         <StackPanel>
                             <TextBlock Text="MAIN SETTINGS"
-                                        Foreground="#00BFFF"
+                                       Foreground="#00BFFF"
                                        FontWeight="Bold"
                                        FontSize="14"
                                        Margin="0,0,0,10"/>
-                                       
-                           <!-- Enable RCS -->
+
+                            <!-- Enable RCS -->
                             <Grid Margin="0,5,0,5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="Enable Recoil Control"
-                                            Foreground="White"
+                                           Foreground="White"
                                            FontSize="13"
                                            VerticalAlignment="Center"/>
                                 <CheckBox x:Name="EnableRCSCheckBox"
-                                           Grid.Column="1"
+                                          Grid.Column="1"
                                           IsChecked="True"
                                           VerticalAlignment="Center"/>
                             </Grid>
-                            
+
                             <!-- Require Toggle -->
                             <Grid Margin="0,5,0,5">
                                 <Grid.ColumnDefinitions>
@@ -197,15 +191,14 @@ if (-not (Test-Path $presetPath)) {
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="Require Toggle Key"
-                                            Foreground="White"
+                                           Foreground="White"
                                            FontSize="13"
                                            VerticalAlignment="Center"/>
                                 <CheckBox x:Name="RequireToggleCheckBox"
-                                           Grid.Column="1"
+                                          Grid.Column="1"
                                           IsChecked="True"
                                           VerticalAlignment="Center"/>
                             </Grid>
-                            
                             <!-- Toggle Key -->
                             <Grid Margin="0,5,0,5">
                                 <Grid.ColumnDefinitions>
@@ -213,7 +206,7 @@ if (-not (Test-Path $presetPath)) {
                                     <ColumnDefinition Width="120"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="Toggle Key"
-                                            Foreground="White"
+                                           Foreground="White"
                                            FontSize="13"
                                            VerticalAlignment="Center"/>
                                 <ComboBox x:Name="ToggleKeyComboBox"
@@ -227,7 +220,7 @@ if (-not (Test-Path $presetPath)) {
                             </Grid>
                         </StackPanel>
                     </Border>
-                    
+
                     <!-- Status Section -->
                     <Border Background="#141414"
                              CornerRadius="8"
@@ -236,32 +229,31 @@ if (-not (Test-Path $presetPath)) {
                             Grid.Column="1">
                         <StackPanel>
                             <TextBlock Text="STATUS"
-                                        Foreground="#00BFFF"
+                                       Foreground="#00BFFF"
                                        FontWeight="Bold"
                                        FontSize="14"
                                        Margin="0,0,0,10"/>
-                            
+
                             <Border Background="#0A0A0A"
                                      CornerRadius="4"
                                      Padding="10"
                                     Margin="0,15,0,15">
                                 <TextBlock x:Name="StatusText"
-                                            Text="Status: Ready"
-                                            Foreground="#00FF00"
+                                           Text="Status: Ready"
+                                           Foreground="#00FF00"
                                            HorizontalAlignment="Center"
                                            FontWeight="Bold"
                                            FontSize="14"/>
                             </Border>
-                            
+
                             <TextBlock Text="Active when enabled"
-                                        Foreground="#B0B0B0"
+                                       Foreground="#B0B0B0"
                                        HorizontalAlignment="Center"
                                        FontSize="12"
                                        Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
                 </Grid>
-                
                 <!-- Vertical Recoil Section -->
                 <Border Background="#141414"
                          CornerRadius="8"
@@ -270,22 +262,22 @@ if (-not (Test-Path $presetPath)) {
                     <StackPanel>
                         <TextBlock Text="VERTICAL RECOIL"
                                     Foreground="#00BFFF"
-                                   FontWeight="Bold"
-                                   FontSize="14"
-                                   Margin="0,0,0,10"/>
-                                   
-                           <!-- Vertical Recoil Mode -->
+                                    FontWeight="Bold"
+                                    FontSize="14"
+                                    Margin="0,0,0,10"/>
+
+                        <!-- Vertical Recoil Mode -->
                         <Grid Margin="0,5,0,5">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="120"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Control Mode"
-                                        Foreground="White"
+                                       Foreground="White"
                                        FontSize="13"
                                        VerticalAlignment="Center"/>
                             <ComboBox x:Name="VerticalRecoilModeComboBox"
-                                       Grid.Column="1"
+                                      Grid.Column="1"
                                       Style="{StaticResource ComboBoxStyle}"
                                       SelectedIndex="2">
                                 <ComboBoxItem Content="Low (5)" Foreground="White" Background="#252525"/>
@@ -296,7 +288,6 @@ if (-not (Test-Path $presetPath)) {
                                 <ComboBoxItem Content="Custom" Foreground="White" Background="#252525"/>
                             </ComboBox>
                         </Grid>
-                        
                         <!-- Vertical Custom Strength -->
                         <Grid Margin="0,5,0,5">
                             <Grid.ColumnDefinitions>
@@ -305,7 +296,7 @@ if (-not (Test-Path $presetPath)) {
                                 <ColumnDefinition Width="200"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Strength"
-                                        Foreground="White"
+                                       Foreground="White"
                                        FontSize="13"
                                        VerticalAlignment="Center"/>
                             <TextBox x:Name="VerticalCustomStrengthTextBox"
@@ -318,7 +309,7 @@ if (-not (Test-Path $presetPath)) {
                                     Value="15"
                                     Margin="10,0,0,0"/>
                         </Grid>
-                        
+
                         <!-- Vertical Delay -->
                         <Grid Margin="0,5,0,5">
                             <Grid.ColumnDefinitions>
@@ -327,7 +318,7 @@ if (-not (Test-Path $presetPath)) {
                                 <ColumnDefinition Width="200"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Delay (ms)"
-                                        Foreground="White"
+                                       Foreground="White"
                                        FontSize="13"
                                        VerticalAlignment="Center"/>
                             <TextBox x:Name="VerticalDelayTextBox"
@@ -342,7 +333,7 @@ if (-not (Test-Path $presetPath)) {
                         </Grid>
                     </StackPanel>
                 </Border>
-                
+
                 <!-- Horizontal Recoil Section -->
                 <Border Background="#141414"
                          CornerRadius="8"
@@ -351,22 +342,22 @@ if (-not (Test-Path $presetPath)) {
                     <StackPanel>
                         <TextBlock Text="HORIZONTAL RECOIL"
                                     Foreground="#00BFFF"
-                                   FontWeight="Bold"
-                                   FontSize="14"
-                                   Margin="0,0,0,10"/>
-                                   
-                           <!-- Horizontal Direction -->
+                                    FontWeight="Bold"
+                                    FontSize="14"
+                                    Margin="0,0,0,10"/>
+
+                        <!-- Horizontal Direction -->
                         <Grid Margin="0,5,0,5">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="120"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Direction"
-                                        Foreground="White"
+                                       Foreground="White"
                                        FontSize="13"
                                        VerticalAlignment="Center"/>
                             <ComboBox x:Name="HorizontalDirectionComboBox"
-                                       Grid.Column="1"
+                                      Grid.Column="1"
                                       Style="{StaticResource ComboBoxStyle}"
                                       SelectedIndex="0">
                                 <ComboBoxItem Content="Left" Foreground="White" Background="#252525"/>
@@ -374,7 +365,6 @@ if (-not (Test-Path $presetPath)) {
                                 <ComboBoxItem Content="Random" Foreground="White" Background="#252525"/>
                             </ComboBox>
                         </Grid>
-                        
                         <!-- Horizontal Strength -->
                         <Grid Margin="0,5,0,5">
                             <Grid.ColumnDefinitions>
@@ -383,7 +373,7 @@ if (-not (Test-Path $presetPath)) {
                                 <ColumnDefinition Width="200"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Strength"
-                                        Foreground="White"
+                                       Foreground="White"
                                        FontSize="13"
                                        VerticalAlignment="Center"/>
                             <TextBox x:Name="HorizontalStrengthTextBox"
@@ -397,7 +387,7 @@ if (-not (Test-Path $presetPath)) {
                                     Maximum="20"
                                     Margin="10,0,0,0"/>
                         </Grid>
-                        
+
                         <!-- Horizontal Delay -->
                         <Grid Margin="0,5,0,5">
                             <Grid.ColumnDefinitions>
@@ -406,7 +396,7 @@ if (-not (Test-Path $presetPath)) {
                                 <ColumnDefinition Width="200"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Delay (ms)"
-                                        Foreground="White"
+                                       Foreground="White"
                                        FontSize="13"
                                        VerticalAlignment="Center"/>
                             <TextBox x:Name="HorizontalDelayTextBox"
@@ -421,7 +411,7 @@ if (-not (Test-Path $presetPath)) {
                         </Grid>
                     </StackPanel>
                 </Border>
-                
+
                 <!-- Preset Management Section -->
                 <Border Background="#141414"
                          CornerRadius="8"
@@ -430,41 +420,27 @@ if (-not (Test-Path $presetPath)) {
                     <StackPanel>
                         <TextBlock Text="PRESET MANAGEMENT"
                                     Foreground="#00BFFF"
-                                   FontWeight="Bold"
-                                   FontSize="14"
-                                   Margin="0,0,0,10"/>
-                                   
-                           <!-- Save Preset -->
-                        <Grid Margin="0,5,0,10">
+                                    FontWeight="Bold"
+                                    FontSize="14"
+                                    Margin="0,0,0,10"/>
+
+                        <!-- Save and Load Buttons -->
+                        <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBox x:Name="PresetNameTextBox"
-                                     Style="{StaticResource TextBoxStyle}"
-                                     Text="MyPreset"
-                                     TextAlignment="Left"
-                                     Padding="5,0,0,0"/>
+
                             <Button x:Name="SavePresetButton"
                                     Content="Save Preset"
-                                    Grid.Column="1"
                                     Style="{StaticResource ButtonStyle}"
-                                    Margin="10,0,0,0"/>
-                        </Grid>
-                        
-                        <!-- Load Preset -->
-                        <Grid Margin="0,5,0,5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="120"/>
-                            </Grid.ColumnDefinitions>
-                            <ComboBox x:Name="LoadPresetComboBox"
-                                      Style="{StaticResource ComboBoxStyle}"/>
+                                    Margin="0,0,5,0"/>
+
                             <Button x:Name="LoadPresetButton"
                                     Content="Load Preset"
                                     Grid.Column="1"
                                     Style="{StaticResource ButtonStyle}"
-                                    Margin="10,0,0,0"/>
+                                    Margin="5,0,0,0"/>
                         </Grid>
                     </StackPanel>
                 </Border>
@@ -494,9 +470,7 @@ $horizontalStrengthTextBox = $window.FindName("HorizontalStrengthTextBox")
 $horizontalStrengthSlider = $window.FindName("HorizontalStrengthSlider")
 $horizontalDelayTextBox = $window.FindName("HorizontalDelayTextBox")
 $horizontalDelaySlider = $window.FindName("HorizontalDelaySlider")
-$presetNameTextBox = $window.FindName("PresetNameTextBox")
 $savePresetButton = $window.FindName("SavePresetButton")
-$loadPresetComboBox = $window.FindName("LoadPresetComboBox")
 $loadPresetButton = $window.FindName("LoadPresetButton")
 $statusText = $window.FindName("StatusText")
 
@@ -518,29 +492,6 @@ if (-not (Test-Path -Path $presetDirectory)) {
     New-Item -ItemType Directory -Path $presetDirectory | Out-Null
 }
 
-# Function to refresh preset list
-function RefreshPresetList {
-    $loadPresetComboBox.Items.Clear()
-    
-    $presetFiles = Get-ChildItem -Path $presetDirectory -Filter "*.rcpreset" | Select-Object -ExpandProperty Name
-    
-    foreach ($presetFile in $presetFiles) {
-        $presetName = [System.IO.Path]::GetFileNameWithoutExtension($presetFile)
-        $item = New-Object System.Windows.Controls.ComboBoxItem
-        $item.Content = $presetName
-        $item.Foreground = "White"
-        $item.Background = "#252525"
-        $loadPresetComboBox.Items.Add($item)
-    }
-    
-    if ($loadPresetComboBox.Items.Count -gt 0) {
-        $loadPresetComboBox.SelectedIndex = 0
-    }
-}
-
-# Call RefreshPresetList on startup
-RefreshPresetList
-
 # Window control handlers
 $closeButton.Add_Click({ $window.Close() })
 $minimizeButton.Add_Click({ 
@@ -561,15 +512,95 @@ $enableRCSCheckBox.Add_Unchecked({
     $statusText.Foreground = "#FF0000"
 })
 
-# Require toggle checkbox handler
-$requireToggleCheckBox.Add_Checked({
-    $script:requireToggle = $true
-})
-$requireToggleCheckBox.Add_Unchecked({
-    $script:requireToggle = $false
+# Add mouse movement functionality
+Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public class MouseMover {
+    [DllImport("user32.dll")]
+    public static extern bool GetAsyncKeyState(int vKey);
+    
+    [DllImport("user32.dll")]
+    public static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
+    
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool GetKeyState(int nVirtKey);
+}
+"@
+
+# Function to check if toggle key is active
+function IsKeyLockOn($key) {
+    switch ($key) {
+        "CapsLock" { return [Console]::CapsLock }
+        "NumLock" { return [Console]::NumberLock }
+        "ScrollLock" { 
+            $scrollLockState = [MouseMover]::GetKeyState(0x91)
+            return ($scrollLockState -band 1) -eq 1
+        }
+        default { return $false }
+    }
+}
+
+# Function to get random horizontal direction
+function GetRandomHorizontalMovement($strength) {
+    $direction = Get-Random -Minimum 0 -Maximum 2
+    if ($direction -eq 0) {
+        return -$strength  # Left
+    } else {
+        return $strength   # Right
+    }
+}
+
+# Initialize timers for mouse movement
+$verticalTimer = New-Object System.Windows.Forms.Timer
+$verticalTimer.Interval = 10  # Fast polling rate
+$horizontalTimer = New-Object System.Windows.Forms.Timer
+$horizontalTimer.Interval = 10  # Fast polling rate
+
+# Vertical timer tick event handler
+$verticalTimer.Add_Tick({
+    if ($script:enableRCS) {
+        $toggleActive = if ($script:requireToggle) { IsKeyLockOn($script:toggleKey) } else { $true }
+        
+        if ($toggleActive) {
+            if ([MouseMover]::GetAsyncKeyState(0x02)) {
+                if ([MouseMover]::GetAsyncKeyState(0x01)) {
+                    [MouseMover]::mouse_event(0x0001, 0, $script:verticalRecoilStrength, 0, 0)
+                }
+            }
+        }
+    }
 })
 
-# Toggle key combobox handler
+# Horizontal timer tick event handler
+$horizontalTimer.Add_Tick({
+    if ($script:enableRCS) {
+        $toggleActive = if ($script:requireToggle) { IsKeyLockOn($script:toggleKey) } else { $true }
+        
+        if ($toggleActive) {
+            if ([MouseMover]::GetAsyncKeyState(0x02)) {
+                if ([MouseMover]::GetAsyncKeyState(0x01)) {
+                    if ($script:horizontalStrength -gt 0) {
+                        $horizontalMove = 0
+                        switch ($script:horizontalDirection) {
+                            "Left" { $horizontalMove = -$script:horizontalStrength }
+                            "Right" { $horizontalMove = $script:horizontalStrength }
+                            "Random" { $horizontalMove = GetRandomHorizontalMovement($script:horizontalStrength) }
+                        }
+                        
+                        [MouseMover]::mouse_event(0x0001, $horizontalMove, 0, 0, 0)
+                    }
+                }
+            }
+        }
+    }
+})
+
+# Control event handlers
+$requireToggleCheckBox.Add_Checked({ $script:requireToggle = $true })
+$requireToggleCheckBox.Add_Unchecked({ $script:requireToggle = $false })
+
 $toggleKeyComboBox.Add_SelectionChanged({
     $script:toggleKey = $toggleKeyComboBox.SelectedItem.Content
 })
@@ -611,518 +642,548 @@ $verticalRecoilModeComboBox.Add_SelectionChanged({
     }
 })
 
-# Vertical custom strength textbox handler
+# Vertical strength controls
+$verticalCustomStrengthSlider.Add_ValueChanged({
+    $value = [Math]::Round($verticalCustomStrengthSlider.Value, 1)
+    $verticalCustomStrengthTextBox.Text = $value
+    if ($verticalRecoilModeComboBox.SelectedItem.Content -eq "Custom") {
+        $script:verticalRecoilStrength = $value
+    }
+})
+
 $verticalCustomStrengthTextBox.Add_TextChanged({
-    if ($verticalCustomStrengthTextBox.Text -match '^\d+$') {
-        $script:verticalCustomStrength = [int]$verticalCustomStrengthTextBox.Text
-        $verticalCustomStrengthSlider.Value = $script:verticalCustomStrength
-        
-        # Only update recoil strength if in custom mode
-        if ($verticalRecoilModeComboBox.SelectedItem.Content -eq "Custom") {
-            $script:verticalRecoilStrength = $script:verticalCustomStrength
+    if ($verticalCustomStrengthTextBox.Text -match '^\d*\.?\d*$') {
+        $value = [double]$verticalCustomStrengthTextBox.Text
+        if ($value -ge 0 -and $value -le 50) {
+            $verticalCustomStrengthSlider.Value = $value
+            if ($verticalRecoilModeComboBox.SelectedItem.Content -eq "Custom") {
+                $script:verticalRecoilStrength = $value
+            }
         }
     }
 })
 
-# Vertical custom strength slider handler
-$verticalCustomStrengthSlider.Add_ValueChanged({
-    $value = [Math]::Round($verticalCustomStrengthSlider.Value)
-    $verticalCustomStrengthTextBox.Text = $value.ToString()
+# Vertical delay controls
+$verticalDelaySlider.Add_ValueChanged({
+    $value = [Math]::Max(1, [Math]::Round($verticalDelaySlider.Value))
+    $verticalDelayTextBox.Text = $value
+    $script:verticalDelay = $value
+    $verticalTimer.Interval = $value
 })
 
-# Vertical delay textbox handler
 $verticalDelayTextBox.Add_TextChanged({
     if ($verticalDelayTextBox.Text -match '^\d+$') {
-        $script:verticalDelay = [int]$verticalDelayTextBox.Text
-        $verticalDelaySlider.Value = $script:verticalDelay
+        $value = [Math]::Max(1, [int]$verticalDelayTextBox.Text)
+        if ($value -ge 0 -and $value -le 50) {
+            $verticalDelaySlider.Value = $value
+            $script:verticalDelay = $value
+            $verticalTimer.Interval = $value
+        }
     }
 })
 
-# Vertical delay slider handler
-$verticalDelaySlider.Add_ValueChanged({
-    $value = [Math]::Round($verticalDelaySlider.Value)
-    $verticalDelayTextBox.Text = $value.ToString()
-})
-
-# Horizontal direction combobox handler
+# Horizontal direction handler
 $horizontalDirectionComboBox.Add_SelectionChanged({
     $script:horizontalDirection = $horizontalDirectionComboBox.SelectedItem.Content
 })
 
-# Horizontal strength textbox handler
+# Horizontal strength controls
+$horizontalStrengthSlider.Add_ValueChanged({
+    $value = [Math]::Round($horizontalStrengthSlider.Value, 1)
+    $horizontalStrengthTextBox.Text = $value
+    $script:horizontalStrength = $value
+})
+
 $horizontalStrengthTextBox.Add_TextChanged({
-    if ($horizontalStrengthTextBox.Text -match '^\d+$') {
-        $script:horizontalStrength = [int]$horizontalStrengthTextBox.Text
-        $horizontalStrengthSlider.Value = $script:horizontalStrength
+    if ($horizontalStrengthTextBox.Text -match '^\d*\.?\d*$') {
+        $value = [double]$horizontalStrengthTextBox.Text
+        if ($value -ge 0 -and $value -le 20) {
+            $horizontalStrengthSlider.Value = $value
+            $script:horizontalStrength = $value
+        }
     }
 })
 
-# Horizontal strength slider handler
-$horizontalStrengthSlider.Add_ValueChanged({
-    $value = [Math]::Round($horizontalStrengthSlider.Value)
-    $horizontalStrengthTextBox.Text = $value.ToString()
+# Horizontal delay controls
+$horizontalDelaySlider.Add_ValueChanged({
+    $value = [Math]::Max(1, [Math]::Round($horizontalDelaySlider.Value))
+    $horizontalDelayTextBox.Text = $value
+    $script:horizontalDelay = $value
+    $horizontalTimer.Interval = $value
 })
 
-# Horizontal delay textbox handler
 $horizontalDelayTextBox.Add_TextChanged({
     if ($horizontalDelayTextBox.Text -match '^\d+$') {
-        $script:horizontalDelay = [int]$horizontalDelayTextBox.Text
-        $horizontalDelaySlider.Value = $script:horizontalDelay
+        $value = [Math]::Max(1, [int]$horizontalDelayTextBox.Text)
+        if ($value -ge 0 -and $value -le 50) {
+            $horizontalDelaySlider.Value = $value
+            $script:horizontalDelay = $value
+            $horizontalTimer.Interval = $value
+        }
     }
 })
 
-# Horizontal delay slider handler
-$horizontalDelaySlider.Add_ValueChanged({
-    $value = [Math]::Round($horizontalDelaySlider.Value)
-    $horizontalDelayTextBox.Text = $value.ToString()
-})
-# Function to show save preset dialog
-function ShowSavePresetDialog {
-    [xml]$saveDialogXaml = @"
-<Window 
+# Save Preset GUI and functionality
+$savePresetButton.Add_Click({
+    $saveWindow = [Windows.Markup.XamlReader]::Parse(@"
+    <Window 
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="Save Preset" 
-    Height="200" 
-    Width="400"
-    WindowStyle="None"
-    AllowsTransparency="True"
-    Background="Transparent"
-    ResizeMode="NoResize"
-    WindowStartupLocation="CenterOwner">
-    
-    <Border Background="#0A0A0A" 
-            CornerRadius="10"
-            BorderBrush="#333333"
-            BorderThickness="1">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            
-            <!-- Header -->
-            <TextBlock Text="SAVE PRESET" 
-                       Foreground="#00BFFF"
-                       FontSize="18"
-                       FontWeight="Bold"
-                       HorizontalAlignment="Center"
-                       Margin="0,15,0,15"/>
-                       
-            <!-- Content -->
-            <StackPanel Grid.Row="1" Margin="20,0,20,0">
-                <TextBlock Text="Preset Name:" 
-                           Foreground="White"
-                           Margin="0,0,0,5"/>
-                <TextBox x:Name="SavePresetNameTextBox" 
-                         Background="#252525"
-                         Foreground="White"
-                         BorderBrush="#00BFFF"
-                         Padding="5"
-                         Height="30"/>
-            </StackPanel>
-            
-            <!-- Buttons -->
-            <StackPanel Grid.Row="2" 
-                        Orientation="Horizontal" 
-                        HorizontalAlignment="Right"
-                        Margin="0,0,20,15">
-                <Button x:Name="SaveDialogCancelButton" 
-                        Content="Cancel"
-                        Width="80"
-                        Height="30"
-                        Background="#252525"
-                        Foreground="White"
-                        BorderBrush="#00BFFF"
-                        BorderThickness="1"
-                        Margin="0,0,10,0"/>
-                <Button x:Name="SaveDialogSaveButton" 
-                        Content="Save"
-                        Width="80"
-                        Height="30"
-                        Background="#252525"
-                        Foreground="White"
-                        BorderBrush="#00BFFF"
-                        BorderThickness="1"/>
-            </StackPanel>
-        </Grid>
-    </Border>
-</Window>
-"@
+            Title="Save Preset"
+            Height="180"
+            Width="300"
+            WindowStyle="None"
+            AllowsTransparency="True"
+            Background="Transparent"
+            WindowStartupLocation="CenterOwner">
+        <Border Background="#0A0A0A"
+                BorderBrush="#333333"
+                BorderThickness="1"
+                CornerRadius="10">
+            <Grid Margin="15">
+                <StackPanel>
+                    <TextBlock Text="SAVE PRESET"
+                             Foreground="#00BFFF"
+                             FontSize="16"
+                             FontWeight="Bold"
+                             HorizontalAlignment="Center"
+                             Margin="0,0,0,15"/>
+                    <TextBox x:Name="PresetNameBox"
+                            Height="30"
+                            Background="#252525"
+                            Foreground="White"
+                            BorderBrush="#00BFFF"
+                            Padding="5"
+                            Margin="0,0,0,15"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="SaveButton"
+                                Content="Save"
+                                Height="30"
+                                Background="#252525"
+                                Foreground="White"
+                                BorderBrush="#00BFFF"
+                                Margin="0,0,5,0"/>
+                        <Button x:Name="CancelButton"
+                                Content="Cancel"
+                                Grid.Column="1"
+                                Height="30"
+                                Background="#252525"
+                                Foreground="White"
+                                BorderBrush="#00BFFF"
+                                Margin="5,0,0,0"/>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Window>
+"@)
 
-    $saveDialogReader = New-Object System.Xml.XmlNodeReader $saveDialogXaml
-    $saveDialog = [Windows.Markup.XamlReader]::Load($saveDialogReader)
-    
-    $savePresetNameTextBox = $saveDialog.FindName("SavePresetNameTextBox")
-    $saveDialogCancelButton = $saveDialog.FindName("SaveDialogCancelButton")
-    $saveDialogSaveButton = $saveDialog.FindName("SaveDialogSaveButton")
-    
-    $savePresetNameTextBox.Text = $presetNameTextBox.Text
-    
-    $saveDialogCancelButton.Add_Click({ $saveDialog.DialogResult = $false })
-    $saveDialogSaveButton.Add_Click({ $saveDialog.DialogResult = $true })
-    
-    $saveDialog.Owner = $window
-    
-    if ($saveDialog.ShowDialog()) {
-        return $savePresetNameTextBox.Text
-    } else {
-        return $null
-    }
-}
+    $saveWindow.Owner = $window
+    $presetNameBox = $saveWindow.FindName("PresetNameBox")
+    $saveButton = $saveWindow.FindName("SaveButton")
+    $cancelButton = $saveWindow.FindName("CancelButton")
 
-# Save preset button handler
-$savePresetButton.Add_Click({
-    $presetName = $presetNameTextBox.Text.Trim()
-    
-    if ([string]::IsNullOrEmpty($presetName)) {
-        $statusText.Text = "Error: Enter preset name"
-        $statusText.Foreground = "#FF0000"
-        return
-    }
-    
-    $presetFilePath = Join-Path -Path $presetDirectory -ChildPath "$presetName.rcpreset"
-    
-    # Check if preset already exists
-    if (Test-Path -Path $presetFilePath) {
-        $confirmSave = ShowSavePresetDialog
-        if ($null -eq $confirmSave) {
-            return
+    $saveButton.Add_Click({
+        if ($presetNameBox.Text -ne "") {
+            $preset = @{
+                EnableRCS = $script:enableRCS
+                RequireToggle = $script:requireToggle
+                ToggleKey = $script:toggleKey
+                VerticalRecoilMode = $script:verticalRecoilMode
+                VerticalRecoilStrength = $script:verticalRecoilStrength
+                VerticalDelay = $script:verticalDelay
+                HorizontalDirection = $script:horizontalDirection
+                HorizontalStrength = $script:horizontalStrength
+                HorizontalDelay = $script:horizontalDelay
+            }
+            $preset | ConvertTo-Json | Set-Content "$presetDirectory\$($presetNameBox.Text).rcpreset"
+            $saveWindow.Close()
         }
-        $presetName = $confirmSave
-        $presetFilePath = Join-Path -Path $presetDirectory -ChildPath "$presetName.rcpreset"
-    }
-    
-    # Create preset object
-    $preset = @{
-        EnableRCS = $script:enableRCS
-        RequireToggle = $script:requireToggle
-        ToggleKey = $script:toggleKey
-        VerticalRecoilMode = $script:verticalRecoilMode
-        VerticalRecoilStrength = $script:verticalRecoilStrength
-        VerticalCustomStrength = $script:verticalCustomStrength
-        VerticalDelay = $script:verticalDelay
-        HorizontalDirection = $script:horizontalDirection
-        HorizontalStrength = $script:horizontalStrength
-        HorizontalDelay = $script:horizontalDelay
-    }
-    
-    # Save preset to file
-    $preset | ConvertTo-Json | Set-Content -Path $presetFilePath
-    
-    $statusText.Text = "Preset saved successfully"
-    $statusText.Foreground = "#00FF00"
-    
-    # Refresh preset list
-    RefreshPresetList
+    })
+
+    $cancelButton.Add_Click({ $saveWindow.Close() })
+    $saveWindow.ShowDialog()
 })
 
-# Load preset button handler
+# Load Preset GUI and functionality
 $loadPresetButton.Add_Click({
-    if ($loadPresetComboBox.SelectedItem -eq $null) {
-        $statusText.Text = "Error: No preset selected"
-        $statusText.Foreground = "#FF0000"
-        return
-    }
-    
-    $presetName = $loadPresetComboBox.SelectedItem.Content
-    $presetFilePath = Join-Path -Path $presetDirectory -ChildPath "$presetName.rcpreset"
-    
-    if (-not (Test-Path -Path $presetFilePath)) {
-        $statusText.Text = "Error: Preset file not found"
-        $statusText.Foreground = "#FF0000"
-        return
-    }
-    
-    # Load preset from file
-    $preset = Get-Content -Path $presetFilePath | ConvertFrom-Json
-    
-    # Apply preset settings
-    $script:enableRCS = $preset.EnableRCS
-    $enableRCSCheckBox.IsChecked = $preset.EnableRCS
-    
-    $script:requireToggle = $preset.RequireToggle
-    $requireToggleCheckBox.IsChecked = $preset.RequireToggle
-    
-    $script:toggleKey = $preset.ToggleKey
-    foreach ($item in $toggleKeyComboBox.Items) {
-        if ($item.Content -eq $preset.ToggleKey) {
-            $toggleKeyComboBox.SelectedItem = $item
-            break
-        }
-    }
-    
-    $script:verticalRecoilMode = $preset.VerticalRecoilMode
-    foreach ($item in $verticalRecoilModeComboBox.Items) {
-        if ($item.Content -eq $preset.VerticalRecoilMode) {
-            $verticalRecoilModeComboBox.SelectedItem = $item
-            break
-        }
-    }
-    
-    $script:verticalRecoilStrength = $preset.VerticalRecoilStrength
-    $script:verticalCustomStrength = $preset.VerticalCustomStrength
-    $verticalCustomStrengthTextBox.Text = $preset.VerticalCustomStrength.ToString()
-    $verticalCustomStrengthSlider.Value = $preset.VerticalCustomStrength
-    
-    $script:verticalDelay = $preset.VerticalDelay
-    $verticalDelayTextBox.Text = $preset.VerticalDelay.ToString()
-    $verticalDelaySlider.Value = $preset.VerticalDelay
-    
-    $script:horizontalDirection = $preset.HorizontalDirection
-    foreach ($item in $horizontalDirectionComboBox.Items) {
-        if ($item.Content -eq $preset.HorizontalDirection) {
-            $horizontalDirectionComboBox.SelectedItem = $item
-            break
-        }
-    }
-    
-    $script:horizontalStrength = $preset.HorizontalStrength
-    $horizontalStrengthTextBox.Text = $preset.HorizontalStrength.ToString()
-    $horizontalStrengthSlider.Value = $preset.HorizontalStrength
-    
-    $script:horizontalDelay = $preset.HorizontalDelay
-    $horizontalDelayTextBox.Text = $preset.HorizontalDelay.ToString()
-    $horizontalDelaySlider.Value = $preset.HorizontalDelay
-    
-    $statusText.Text = "Preset loaded successfully"
-    $statusText.Foreground = "#00FF00"
-})
+    $loadWindow = [Windows.Markup.XamlReader]::Parse(@"
+    <Window 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            Title="Load Preset"
+            Height="500"
+            Width="400"
+            WindowStyle="None"
+            AllowsTransparency="True"
+            Background="Transparent"
+            WindowStartupLocation="CenterOwner">
+        <Border Background="#0A0A0A"
+                BorderBrush="#333333"
+                BorderThickness="1"
+                CornerRadius="10">
+            <Grid Margin="15">
+                <StackPanel>
+                    <TextBlock Text="LOAD PRESET"
+                             Foreground="#00BFFF"
+                             FontSize="16"
+                             FontWeight="Bold"
+                             HorizontalAlignment="Center"
+                             Margin="0,0,0,15"/>
+                    <!-- Search Box -->
+                    <TextBox x:Name="SearchBox"
+                            Height="30"
+                            Background="#252525"
+                            Foreground="White"
+                            BorderBrush="#00BFFF"
+                            Padding="5"
+                            Margin="0,0,0,10">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox">
+                                <Style.Triggers>
+                                    <Trigger Property="Text" Value="">
+                                        <Setter Property="Background" Value="#252525"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="TextBox">
+                                                    <Border Background="{TemplateBinding Background}"
+                                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                                            BorderThickness="{TemplateBinding BorderThickness}">
+                                                        <Grid>
+                                                            <TextBlock Text="Search presets..." 
+                                                                     Foreground="Gray" 
+                                                                     Margin="5,5,0,0" 
+                                                                     IsHitTestVisible="False">
+                                                                <TextBlock.Style>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TextBox}}" Value="">
+                                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                        <Setter Property="Visibility" Value="Hidden"/>
+                                                                    </Style>
+                                                                </TextBlock.Style>
+                                                            </TextBlock>
+                                                            <ScrollViewer x:Name="PART_ContentHost"/>
+                                                        </Grid>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                    <ListBox x:Name="PresetList"
+                            Background="#252525"
+                            Foreground="White"
+                            BorderBrush="#00BFFF"
+                            Height="330"
+                            Margin="0,0,0,15"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="LoadButton"
+                                Content="Load"
+                                Height="30"
+                                Background="#252525"
+                                Foreground="White"
+                                BorderBrush="#00BFFF"
+                                Margin="0,0,5,0"/>
+                        <Button x:Name="RenameButton"
+                                Content="Rename"
+                                Grid.Column="1"
+                                Height="30"
+                                Background="#252525"
+                                Foreground="White"
+                                BorderBrush="#00BFFF"
+                                Margin="5,0,5,0"/>
+                        <Button x:Name="DeleteButton"
+                                Content="Delete"
+                                Grid.Column="2"
+                                Height="30"
+                                Background="#252525"
+                                Foreground="White"
+                                BorderBrush="#00BFFF"
+                                Margin="5,0,0,0"/>
+                       <Button x:Name="CancelButton"
+                                Content="Cancel"
+                                Grid.Column="3"
+                                Height="30"
+                                Background="#252525"
+                                Foreground="White"
+                                BorderBrush="#00BFFF"
+                                Margin="5,0,0,0"/>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Window>
+"@)
 
-# Add mouse movement functionality
-Add-Type @"
-using System;
-using System.Runtime.InteropServices;
+    $loadWindow.Owner = $window
+    $presetList = $loadWindow.FindName("PresetList")
+    $loadButton = $loadWindow.FindName("LoadButton")
+    $renameButton = $loadWindow.FindName("RenameButton")
+    $deleteButton = $loadWindow.FindName("DeleteButton")
+    $cancelButton = $loadWindow.FindName("CancelButton")
 
-public class MouseMover {
-    [DllImport("user32.dll")]
-    public static extern bool GetAsyncKeyState(int vKey);
-    
-    [DllImport("user32.dll")]
-    public static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
-    
-    [DllImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool GetKeyState(int nVirtKey);
-}
-"@
+    $cancelButton.Add_Click({ $loadWindow.Close() })
 
-# Function to check if toggle key is active
-function IsKeyLockOn($key) {
-    switch ($key) {
-        "CapsLock" { return [Console]::CapsLock }
-        "NumLock" { return [Console]::NumberLock }
-        "ScrollLock" { 
-            # For ScrollLock we need to use GetKeyState since .NET doesn't expose it directly
-            $scrollLockState = [MouseMover]::GetKeyState(0x91)
-            return ($scrollLockState -band 1) -eq 1
-        }
-        default { return $false }
+    # Store all presets in a variable
+    $allPresets = @()
+    Get-ChildItem -Path $presetDirectory -Filter "*.rcpreset" | ForEach-Object {
+        $allPresets += $_.BaseName
+        $presetList.Items.Add($_.BaseName)
     }
-}
 
-# Function to get random horizontal direction
-function GetRandomHorizontalMovement($strength) {
-    $direction = Get-Random -Minimum 0 -Maximum 2
-    if ($direction -eq 0) {
-        return -$strength  # Left
-    } else {
-        return $strength   # Right
-    }
-}
-
-# Initialize timers for mouse movement
-$verticalTimer = New-Object System.Windows.Forms.Timer
-$verticalTimer.Interval = 10  # Fast polling rate
-$horizontalTimer = New-Object System.Windows.Forms.Timer
-$horizontalTimer.Interval = 10  # Fast polling rate
-
-# Vertical timer tick event handler
-$verticalTimer.Add_Tick({
-    # Check if recoil control is enabled
-    if ($script:enableRCS) {
-        # Check if toggle is required and if it's active
-        $toggleActive = if ($script:requireToggle) { IsKeyLockOn($script:toggleKey) } else { $true }
+    # Add search functionality
+    $searchBox = $loadWindow.FindName("SearchBox")
+    $searchBox.Add_TextChanged({
+        $searchText = $searchBox.Text.ToLower()
+        $presetList.Items.Clear()
         
-        if ($toggleActive) {
-            # Check if right mouse button is pressed (Mouse2)
-            if ([MouseMover]::GetAsyncKeyState(0x02)) {
-                # Check if left mouse button is pressed (Mouse1)
-                if ([MouseMover]::GetAsyncKeyState(0x01)) {
-                    # Apply vertical recoil control by moving mouse
-                    [MouseMover]::mouse_event(0x0001, 0, $script:verticalRecoilStrength, 0, 0)
-                }
+        if ($searchText -eq "") {
+            $allPresets | ForEach-Object {
+                $presetList.Items.Add($_)
             }
-        }
-    }
-})
-
-# Horizontal timer tick event handler
-$horizontalTimer.Add_Tick({
-    # Check if recoil control is enabled
-    if ($script:enableRCS) {
-        # Check if toggle is required and if it's active
-        $toggleActive = if ($script:requireToggle) { IsKeyLockOn($script:toggleKey) } else { $true }
-        
-        if ($toggleActive) {
-            # Check if right mouse button is pressed (Mouse2)
-            if ([MouseMover]::GetAsyncKeyState(0x02)) {
-                # Check if left mouse button is pressed (Mouse1)
-                if ([MouseMover]::GetAsyncKeyState(0x01)) {
-                    # Only apply horizontal recoil if strength is greater than 0
-                    if ($script:horizontalStrength -gt 0) {
-                        # Calculate horizontal movement
-                        $horizontalMove = 0
-                        switch ($script:horizontalDirection) {
-                            "Left" { $horizontalMove = -$script:horizontalStrength }
-                            "Right" { $horizontalMove = $script:horizontalStrength }
-                            "Random" { $horizontalMove = GetRandomHorizontalMovement($script:horizontalStrength) }
-                        }
-                        
-                        # Apply horizontal recoil control by moving mouse
-                        [MouseMover]::mouse_event(0x0001, $horizontalMove, 0, 0, 0)
-                    }
-                }
-            }
-        }
-    }
-})
-# Window state changed event handler
-$window.Add_StateChanged({
-    if ($window.WindowState -eq "Minimized") {
-        $statusText.Text = "Status: Active (Minimized)"
-        $statusText.Foreground = "#00FF00"
-    } else {
-        if ($script:enableRCS) {
-            $statusText.Text = "Status: Active"
-            $statusText.Foreground = "#00FF00"
         } else {
-            $statusText.Text = "Status: Disabled"
-            $statusText.Foreground = "#FF0000"
+            $filteredPresets = $allPresets | Where-Object { $_.ToLower().Contains($searchText) }
+            $filteredPresets | ForEach-Object {
+                $presetList.Items.Add($_)
+            }
         }
+    })
+
+    # Double-click to load
+    $presetList.Add_MouseDoubleClick({
+        if ($presetList.SelectedItem) {
+            LoadSelectedPreset
+            $loadWindow.Close()
+        }
+    })
+
+    # Load button click
+    $loadButton.Add_Click({
+        if ($presetList.SelectedItem) {
+            LoadSelectedPreset
+            $loadWindow.Close()
+        }
+    })
+
+    # Delete button click
+    $deleteButton.Add_Click({
+        if ($presetList.SelectedItem) {
+            $confirmWindow = [Windows.Markup.XamlReader]::Parse(@"
+            <Window 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    Title="Confirm Delete"
+                    Height="150"
+                    Width="300"
+                    WindowStyle="None"
+                    AllowsTransparency="True"
+                    Background="Transparent"
+                    WindowStartupLocation="CenterOwner">
+                <Border Background="#0A0A0A"
+                        BorderBrush="#333333"
+                        BorderThickness="1"
+                        CornerRadius="10">
+                    <Grid Margin="15">
+                        <StackPanel>
+                            <TextBlock Text="Delete Preset?"
+                                     Foreground="#00BFFF"
+                                     FontSize="16"
+                                     FontWeight="Bold"
+                                     HorizontalAlignment="Center"
+                                     Margin="0,0,0,15"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="YesButton"
+                                        Content="Yes"
+                                        Height="30"
+                                        Background="#252525"
+                                        Foreground="White"
+                                        BorderBrush="#00BFFF"
+                                        Margin="0,0,5,0"/>
+                                <Button x:Name="NoButton"
+                                        Content="No"
+                                        Grid.Column="1"
+                                        Height="30"
+                                        Background="#252525"
+                                        Foreground="White"
+                                        BorderBrush="#00BFFF"
+                                        Margin="5,0,0,0"/>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Window>
+"@)
+
+        $confirmWindow.Owner = $loadWindow
+        $yesButton = $confirmWindow.FindName("YesButton")
+        $noButton = $confirmWindow.FindName("NoButton")
+        
+        $yesButton.Add_Click({
+            $itemToDelete = $presetList.SelectedItem
+            Remove-Item "$presetDirectory\$itemToDelete.rcpreset"
+            $presetList.Items.Remove($itemToDelete)
+            $script:allPresets = $allPresets | Where-Object { $_ -ne $itemToDelete }
+            $confirmWindow.Close()
+        })
+        
+        $noButton.Add_Click({ $confirmWindow.Close() })
+        $confirmWindow.ShowDialog()
     }
 })
 
-# Add window load event to start timers
-$window.Add_Loaded({
-    # Set timer intervals based on delay values
-    $verticalTimer.Interval = [Math]::Max(1, $script:verticalDelay)
-    $horizontalTimer.Interval = [Math]::Max(1, $script:horizontalDelay)
-    
-    $verticalTimer.Start()
-    $horizontalTimer.Start()
-    
-    if ($script:enableRCS) {
-        $statusText.Text = "Status: Active"
-        $statusText.Foreground = "#00FF00"
-    } else {
-        $statusText.Text = "Status: Disabled"
-        $statusText.Foreground = "#FF0000"
+# Rename button click handler
+$renameButton.Add_Click({
+    if ($presetList.SelectedItem) {
+        $oldName = $presetList.SelectedItem
+        $renameWindow = [Windows.Markup.XamlReader]::Parse(@"
+            <Window 
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    Title="Rename Preset"
+                    Height="180"
+                    Width="300"
+                    WindowStyle="None"
+                    AllowsTransparency="True"
+                    Background="Transparent"
+                    WindowStartupLocation="CenterOwner">
+                <Border Background="#0A0A0A"
+                        BorderBrush="#333333"
+                        BorderThickness="1"
+                        CornerRadius="10">
+                    <Grid Margin="15">
+                        <StackPanel>
+                            <TextBlock Text="RENAME PRESET"
+                                     Foreground="#00BFFF"
+                                     FontSize="16"
+                                     FontWeight="Bold"
+                                     HorizontalAlignment="Center"
+                                     Margin="0,0,0,15"/>
+                            <TextBox x:Name="NewNameBox"
+                                    Height="30"
+                                    Background="#252525"
+                                    Foreground="White"
+                                    BorderBrush="#00BFFF"
+                                    Padding="5"
+                                    Margin="0,0,0,15"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="RenameConfirmButton"
+                                        Content="Rename"
+                                        Height="30"
+                                        Background="#252525"
+                                        Foreground="White"
+                                        BorderBrush="#00BFFF"
+                                        Margin="0,0,5,0"/>
+                                <Button x:Name="CancelButton"
+                                        Content="Cancel"
+                                        Grid.Column="1"
+                                        Height="30"
+                                        Background="#252525"
+                                        Foreground="White"
+                                        BorderBrush="#00BFFF"
+                                        Margin="5,0,0,0"/>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Window>
+"@)
+
+        $renameWindow.Owner = $loadWindow
+        $newNameBox = $renameWindow.FindName("NewNameBox")
+        $renameConfirmButton = $renameWindow.FindName("RenameConfirmButton")
+        $cancelButton = $renameWindow.FindName("CancelButton")
+        $newNameBox.Text = $oldName
+
+        $renameConfirmButton.Add_Click({
+            if ($newNameBox.Text -ne "") {
+                Rename-Item "$presetDirectory\$oldName.rcpreset" "$presetDirectory\$($newNameBox.Text).rcpreset"
+                $selectedIndex = $presetList.SelectedIndex
+                $presetList.Items.RemoveAt($selectedIndex)
+                $presetList.Items.Insert($selectedIndex, $newNameBox.Text)
+                
+                # Updated array handling
+                $index = [array]::IndexOf($allPresets, $oldName)
+                if ($index -ne -1) {
+                    $allPresets[$index] = $newNameBox.Text
+                }
+                
+                $presetList.SelectedIndex = $selectedIndex
+                $renameWindow.Close()
+            }
+        })
+
+        $cancelButton.Add_Click({ $renameWindow.Close() })
+        $renameWindow.ShowDialog()
     }
 })
 
-# Make window draggable
+$loadWindow.ShowDialog()
+})
+
+    # Function to load selected preset
+    function LoadSelectedPreset {
+        $preset = Get-Content "$presetDirectory\$($presetList.SelectedItem).rcpreset" | ConvertFrom-Json
+        
+        $enableRCSCheckBox.IsChecked = $preset.EnableRCS
+        $requireToggleCheckBox.IsChecked = $preset.RequireToggle
+        $toggleKeyComboBox.SelectedItem = $toggleKeyComboBox.Items | 
+            Where-Object { $_.Content -eq $preset.ToggleKey }
+        
+        $verticalRecoilModeComboBox.SelectedItem = $verticalRecoilModeComboBox.Items | 
+            Where-Object { $_.Content -eq $preset.VerticalRecoilMode }
+        
+        $verticalCustomStrengthTextBox.Text = $preset.VerticalRecoilStrength
+        $verticalCustomStrengthSlider.Value = $preset.VerticalRecoilStrength
+        $verticalDelayTextBox.Text = $preset.VerticalDelay
+        $verticalDelaySlider.Value = $preset.VerticalDelay
+        
+        $horizontalDirectionComboBox.SelectedItem = $horizontalDirectionComboBox.Items | 
+            Where-Object { $_.Content -eq $preset.HorizontalDirection }
+        
+        $horizontalStrengthTextBox.Text = $preset.HorizontalStrength
+        $horizontalStrengthSlider.Value = $preset.HorizontalStrength
+        $horizontalDelayTextBox.Text = $preset.HorizontalDelay
+        $horizontalDelaySlider.Value = $preset.HorizontalDelay
+    }
+
+# Window drag functionality
 $window.Add_MouseLeftButtonDown({
     $window.DragMove()
 })
 
-# Update timer intervals when delay values change
-$verticalDelayTextBox.Add_TextChanged({
-    if ($verticalDelayTextBox.Text -match '^\d+$') {
-        $script:verticalDelay = [int]$verticalDelayTextBox.Text
-        $verticalTimer.Interval = [Math]::Max(1, $script:verticalDelay)
-    }
-})
+# Start timers
+$verticalTimer.Start()
+$horizontalTimer.Start()
 
-$horizontalDelayTextBox.Add_TextChanged({
-    if ($horizontalDelayTextBox.Text -match '^\d+$') {
-        $script:horizontalDelay = [int]$horizontalDelayTextBox.Text
-        $horizontalTimer.Interval = [Math]::Max(1, $script:horizontalDelay)
-    }
-})
+# Show window
+$window.ShowDialog()
 
-# Initialize UI with default values
-$enableRCSCheckBox.IsChecked = $script:enableRCS
-$requireToggleCheckBox.IsChecked = $script:requireToggle
-
-# Initialize toggle key combobox
-$toggleKeys = @("CapsLock", "NumLock", "ScrollLock")
-foreach ($key in $toggleKeys) {
-    $item = New-Object System.Windows.Controls.ComboBoxItem
-    $item.Content = $key
-    $item.Foreground = "White"
-    $item.Background = "#252525"
-    $toggleKeyComboBox.Items.Add($item)
-    
-    if ($key -eq $script:toggleKey) {
-        $toggleKeyComboBox.SelectedItem = $item
-    }
-}
-
-# Initialize vertical recoil mode combobox
-$verticalRecoilModes = @("Low (5)", "Medium (10)", "High (15)", "Ultra (20)", "Insanity (30)", "Custom")
-foreach ($mode in $verticalRecoilModes) {
-    $item = New-Object System.Windows.Controls.ComboBoxItem
-    $item.Content = $mode
-    $item.Foreground = "White"
-    $item.Background = "#252525"
-    $verticalRecoilModeComboBox.Items.Add($item)
-    
-    if ($mode -eq $script:verticalRecoilMode) {
-        $verticalRecoilModeComboBox.SelectedItem = $item
-    }
-}
-
-# Initialize horizontal direction combobox
-$horizontalDirections = @("None", "Left", "Right", "Random")
-foreach ($direction in $horizontalDirections) {
-    $item = New-Object System.Windows.Controls.ComboBoxItem
-    $item.Content = $direction
-    $item.Foreground = "White"
-    $item.Background = "#252525"
-    $horizontalDirectionComboBox.Items.Add($item)
-    
-    if ($direction -eq $script:horizontalDirection) {
-        $horizontalDirectionComboBox.SelectedItem = $item
-    }
-}
-
-# Set initial values for sliders and textboxes
-$verticalCustomStrengthTextBox.Text = $script:verticalCustomStrength.ToString()
-$verticalCustomStrengthSlider.Value = $script:verticalCustomStrength
-$verticalDelayTextBox.Text = $script:verticalDelay.ToString()
-$verticalDelaySlider.Value = $script:verticalDelay
-$horizontalStrengthTextBox.Text = $script:horizontalStrength.ToString()
-$horizontalStrengthSlider.Value = $script:horizontalStrength
-$horizontalDelayTextBox.Text = $script:horizontalDelay.ToString()
-$horizontalDelaySlider.Value = $script:horizontalDelay
-
-# Add tooltip for status text
-$statusTooltip = New-Object System.Windows.Controls.ToolTip
-$statusTooltip.Content = "When active, the recoil control will work when you hold both mouse buttons. Toggle with CapsLock."
-$statusText.ToolTip = $statusTooltip
-
-# Add tooltip for preset management
-$presetTooltip = New-Object System.Windows.Controls.ToolTip
-$presetTooltip.Content = "Save and load your recoil control settings as presets."
-$presetNameTextBox.ToolTip = $presetTooltip
-$savePresetButton.ToolTip = $presetTooltip
-
-# Add tooltip for toggle key
-$toggleKeyTooltip = New-Object System.Windows.Controls.ToolTip
-$toggleKeyTooltip.Content = "Select which key to use as a toggle for enabling/disabling recoil control."
-$toggleKeyComboBox.ToolTip = $toggleKeyTooltip
-
-# Add tooltip for vertical recoil mode
-$verticalRecoilModeTooltip = New-Object System.Windows.Controls.ToolTip
-$verticalRecoilModeTooltip.Content = "Select the strength of vertical recoil control or use a custom value."
-$verticalRecoilModeComboBox.ToolTip = $verticalRecoilModeTooltip
-
-# Add tooltip for horizontal direction
-$horizontalDirectionTooltip = New-Object System.Windows.Controls.ToolTip
-$horizontalDirectionTooltip.Content = "Select the direction of horizontal recoil control or set to random."
-$horizontalDirectionComboBox.ToolTip = $horizontalDirectionTooltip
-
-# Show the window
-$window.ShowDialog() | Out-Null
+# Cleanup
+$verticalTimer.Stop()
+$horizontalTimer.Stop()
+$verticalTimer.Dispose()
+$horizontalTimer.Dispose()
