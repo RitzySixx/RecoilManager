@@ -223,34 +223,40 @@ if (-not (Test-Path $presetPath)) {
 
                     <!-- Status Section -->
                     <Border Background="#141414"
-                             CornerRadius="8"
-                             Padding="15"
-                             Margin="7.5,0,0,0"
+                            CornerRadius="8"
+                            Padding="15"
+                            Margin="7.5,0,0,0"
                             Grid.Column="1">
                         <StackPanel>
                             <TextBlock Text="STATUS"
-                                       Foreground="#00BFFF"
-                                       FontWeight="Bold"
-                                       FontSize="14"
-                                       Margin="0,0,0,10"/>
-
+                                    Foreground="#00BFFF"
+                                    FontWeight="Bold"
+                                    FontSize="14"
+                                    Margin="0,0,0,10"/>
                             <Border Background="#0A0A0A"
-                                     CornerRadius="4"
-                                     Padding="10"
+                                    CornerRadius="4"
+                                    Padding="10"
                                     Margin="0,15,0,15">
-                                <TextBlock x:Name="StatusText"
-                                           Text="Status: Ready"
-                                           Foreground="#00FF00"
-                                           HorizontalAlignment="Center"
-                                           FontWeight="Bold"
-                                           FontSize="14"/>
+                                <StackPanel>
+                                    <TextBlock x:Name="StatusText"
+                                            Text="Status: Ready"
+                                            Foreground="#00FF00"
+                                            HorizontalAlignment="Center"
+                                            FontWeight="Bold"
+                                            FontSize="14"/>
+                                    <TextBlock x:Name="CurrentPresetText"
+                                            Text="Preset: None"
+                                            Foreground="#00BFFF"
+                                            HorizontalAlignment="Center"
+                                            FontWeight="Bold"
+                                            FontSize="14"/>
+                                </StackPanel>
                             </Border>
-
                             <TextBlock Text="Active when enabled"
-                                       Foreground="#B0B0B0"
-                                       HorizontalAlignment="Center"
-                                       FontSize="12"
-                                       Margin="0,5,0,0"/>
+                                    Foreground="#B0B0B0"
+                                    HorizontalAlignment="Center"
+                                    FontSize="12"
+                                    Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -1148,6 +1154,10 @@ $loadWindow.ShowDialog()
     function LoadSelectedPreset {
         $preset = Get-Content "$presetDirectory\$($presetList.SelectedItem).rcpreset" | ConvertFrom-Json
         
+        # Current Preset
+        $currentPresetText = $window.FindName("CurrentPresetText")
+        $currentPresetText.Text = "Preset: $($presetList.SelectedItem)"
+
         $enableRCSCheckBox.IsChecked = $preset.EnableRCS
         $requireToggleCheckBox.IsChecked = $preset.RequireToggle
         $toggleKeyComboBox.SelectedItem = $toggleKeyComboBox.Items | 
