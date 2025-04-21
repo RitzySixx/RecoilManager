@@ -79,7 +79,7 @@ if (-not (Test-Path $presetPath)) {
 
         <Style x:Key="SliderStyle" TargetType="Slider">
             <Setter Property="Minimum" Value="0"/>
-            <Setter Property="Maximum" Value="50000"/>
+            <Setter Property="Maximum" Value="350"/>
             <Setter Property="TickFrequency" Value="0.1"/>
             <Setter Property="IsSnapToTickEnabled" Value="True"/>
         </Style>
@@ -390,7 +390,7 @@ if (-not (Test-Path $presetPath)) {
                                     Grid.Column="2"
                                     Style="{StaticResource SliderStyle}"
                                     Value="0"
-                                    Maximum="50000"
+                                    Maximum="350"
                                     Margin="10,0,0,0"/>
                         </Grid>
 
