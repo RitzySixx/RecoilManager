@@ -79,7 +79,7 @@ if (-not (Test-Path $presetPath)) {
 
         <Style x:Key="SliderStyle" TargetType="Slider">
             <Setter Property="Minimum" Value="0"/>
-            <Setter Property="Maximum" Value="50"/>
+            <Setter Property="Maximum" Value="90000"/>
             <Setter Property="TickFrequency" Value="0.1"/>
             <Setter Property="IsSnapToTickEnabled" Value="True"/>
         </Style>
