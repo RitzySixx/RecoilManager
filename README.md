@@ -37,7 +37,3 @@ These files store:
 ## 🚀 Getting Started
 
 ### 1. 📥 Download
-
-Clone or download the repository:
-```bash
-git clone https://github.com/RitzySixx/RecoilManager.git
