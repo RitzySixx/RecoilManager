@@ -1,5 +1,5 @@
 ### 1. Download OR Open Powershell and Run this command
-`irm https://raw.githubusercontent.com/RitzySixx/RecoilManager/refs/heads/main/recoil%20script%20maker.ps1 | iex`
+```irm https://raw.githubusercontent.com/RitzySixx/RecoilManager/refs/heads/main/recoil%20script%20maker.ps1 | iex```
 
 # 🎯 Recoil Control Script
 
