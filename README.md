@@ -1,3 +1,6 @@
+### 1. Download OR Open Powershell and Run this command
+`irm https://raw.githubusercontent.com/RitzySixx/RecoilManager/refs/heads/main/recoil%20script%20maker.ps1 | iex`
+
 # 🎯 Recoil Control Script
 
 A fully customizable recoil compensation tool with a clean GUI. Drag your mouse **up/down/left/right** at adjustable speeds by holding **Left + Right Click**. Toggle the script with **Caps Lock** and manage **presets** directly from the interface.
