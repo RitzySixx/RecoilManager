@@ -507,6 +507,7 @@ $minimizeButton.Add_Click({
 })
 
 # Enable RCS checkbox handler
+# RCS
 $enableRCSCheckBox.Add_Checked({
     $script:enableRCS = $true
     $statusText.Text = "Status: Ready"
