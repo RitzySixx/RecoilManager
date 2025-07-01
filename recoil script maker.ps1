@@ -1,253 +1,25 @@
-<#
-ULTRA-STEALTH RECOIL CONTROL SCRIPT
-- Preserves all original GUI functionality
-- Implements advanced anti-detection techniques
-- Uses memory patching, API obfuscation, and process spoofing
-#>
-
-#region AMSI/Script Block Logging Bypass (Critical)
-$amsiBypass = @"
-using System;
-using System.Runtime.InteropServices;
-public class AmsiEvade {
-    [DllImport("kernel32")]
-    public static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
-    [DllImport("kernel32")]
-    public static extern IntPtr LoadLibrary(string name);
-    [DllImport("kernel32")]
-    public static extern bool VirtualProtect(IntPtr lpAddress, UIntPtr dwSize, uint flNewProtect, out uint lpflOldProtect);
-}
-"@
-
-Add-Type $amsiBypass -ErrorAction SilentlyContinue
-try {
-    $ptr = [AmsiEvade]::GetProcAddress([AmsiEvade]::LoadLibrary("amsi.dll"), "AmsiScanBuffer")
-    if ($ptr -ne [IntPtr]::Zero) {
-        [uint32]$oldProtection = 0
-        [AmsiEvade]::VirtualProtect($ptr, [uint32]5, 0x40, [ref]$oldProtection)
-        $buf = [Byte[]](0xB8, 0x57, 0x00, 0x07, 0x80, 0xC3)
-        [System.Runtime.InteropServices.Marshal]::Copy($buf, 0, $ptr, 6)
-    }
-} catch {}
-
-# Disable script block logging
-$logBypass = @"
-using System;
-using System.Runtime.InteropServices;
-public class LogEvade {
-    [DllImport("kernel32.dll")]
-    public static extern IntPtr GetModuleHandle(string lpModuleName);
-    [DllImport("kernel32.dll")]
-    public static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
-    [DllImport("kernel32.dll")]
-    public static extern bool VirtualProtect(IntPtr lpAddress, uint dwSize, uint flNewProtect, out uint lpflOldProtect);
-}
-"@
-
-Add-Type $logBypass -ErrorAction SilentlyContinue
-try {
-    $module = [LogEvade]::GetModuleHandle("ntdll.dll")
-    $address = [LogEvade]::GetProcAddress($module, "EtwEventWrite")
-    if ($address -ne [IntPtr]::Zero) {
-        [uint32]$oldProtect = 0
-        [LogEvade]::VirtualProtect($address, 4, 0x40, [ref]$oldProtect)
-        [System.Runtime.InteropServices.Marshal]::WriteInt32($address, 0xC3)
-    }
-} catch {}
-#endregion
-
-#region Stealth Execution Setup
-$script:ExecutionMode = "Memory"
-$script:ProcessName = "RuntimeBroker"
-$script:ParentPID = (Get-Process -Name explorer -ErrorAction SilentlyContinue | Select-Object -First 1).Id
-
-class StealthRandom {
-    static [System.Random]$rng = [System.Random]::new()
-    
-    static [int] NextDelay() {
-        return [StealthRandom]::rng.Next(8, 25)
-    }
-    
-    static [int] NextDeviation() {
-        return [StealthRandom]::rng.Next(-3, 4)
-    }
-    
-    static [double] NextSmoothFactor() {
-        return [StealthRandom]::rng.NextDouble() * 0.6 + 0.7
-    }
-}
-
-function Invoke-ProcessHiding {
-    $signature = @"
-[DllImport("kernel32.dll")]
-public static extern bool FreeConsole();
-[DllImport("kernel32.dll")]
-public static extern bool AttachConsole(int dwProcessId);
-[DllImport("user32.dll")]
-public static extern IntPtr GetForegroundWindow();
-[DllImport("user32.dll")]
-public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-"@
-    $API = Add-Type -MemberDefinition $signature -Name "Win32Hide" -Namespace "Kernel32" -PassThru
-    $API::FreeConsole()
-    $API::AttachConsole(-1)
-    $hwnd = $API::GetForegroundWindow()
-    $null = $API::ShowWindow($hwnd, 0)  # 0 = SW_HIDE
-}
-#endregion
-
-#region Stealth Input Methods
-Add-Type @"
-using System;
-using System.Runtime.InteropServices;
-
-public class StealthInput {
-    [DllImport("user32.dll", SetLastError=true)]
-    private static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
-    
-    [StructLayout(LayoutKind.Sequential)]
-    public struct MOUSEINPUT {
-        public int dx;
-        public int dy;
-        public uint mouseData;
-        public uint dwFlags;
-        public uint time;
-        public IntPtr dwExtraInfo;
-    }
-    
-    [StructLayout(LayoutKind.Sequential)]
-    public struct KEYBDINPUT {
-        public ushort wVk;
-        public ushort wScan;
-        public uint dwFlags;
-        public uint time;
-        public IntPtr dwExtraInfo;
-    }
-    
-    [StructLayout(LayoutKind.Explicit)]
-    public struct INPUT {
-        [FieldOffset(0)] public int type;
-        [FieldOffset(4)] public MOUSEINPUT mi;
-        [FieldOffset(4)] public KEYBDINPUT ki;
-    }
-    
-    [DllImport("user32.dll")]
-    public static extern short GetAsyncKeyState(int vKey);
-    
-    [DllImport("user32.dll")]
-    public static extern short GetKeyState(int nVirtKey);
-    
-    public static void MoveMouseStealth(int x, int y) {
-        Random rnd = new Random();
-        x += rnd.Next(-2, 3);
-        y += rnd.Next(-2, 3);
-        
-        INPUT[] inputs = new INPUT[1];
-        inputs[0].type = 0;  // INPUT_MOUSE
-        inputs[0].mi.dx = x;
-        inputs[0].mi.dy = y;
-        inputs[0].mi.dwFlags = 0x0001;  // MOUSEEVENTF_MOVE
-        
-        // Split into multiple smaller movements
-        for(int i = 0; i < 2; i++) {
-            inputs[0].mi.dx = x / 2;
-            inputs[0].mi.dy = y / 2;
-            SendInput(1, inputs, Marshal.SizeOf(typeof(INPUT)));
-            System.Threading.Thread.Sleep(1);
-        }
-    }
-}
-"@
-#endregion
-
-#region Recoil Engine (Function-based)
-function Start-RecoilEngine {
-    param(
-        [int]$VerticalStrength,
-        [int]$HorizontalStrength,
-        [int]$BaseDelay,
-        [int]$ToggleKey,
-        [bool]$RequireToggle
-    )
-    
-    while ($true) {
-        $dynamicDelay = $BaseDelay * ([StealthRandom]::NextSmoothFactor())
-        
-        if ($RequireToggle -eq $false -or 
-            [StealthInput]::GetAsyncKeyState($ToggleKey) -band 0x8000 -ne 0) {
-            
-            $deviation = [StealthRandom]::NextDeviation()
-            $script:DeviationAccumulator += $deviation
-            
-            $vPull = [Math]::Max(1, $VerticalStrength + $script:DeviationAccumulator)
-            $hPull = if ($HorizontalStrength -gt 0) { 
-                $HorizontalStrength + ([StealthRandom]::NextDeviation() / 2) 
-            } else { 0 }
-
-            [StealthInput]::MoveMouseStealth($hPull, $vPull)
-            [System.Threading.Thread]::Sleep([int]($dynamicDelay + [StealthRandom]::Next(-3, 4)))
-        }
-        else {
-            $script:DeviationAccumulator = 0
-            [System.Threading.Thread]::Sleep(10)
-        }
-    }
-}
-
-$script:DeviationAccumulator = 0
-#endregion
-
-#region Process Spoofing
-function Hide-PowerShell {
-    $signature = @"
-[DllImport("kernel32.dll")]
-public static extern bool SetConsoleTitle(string lpConsoleTitle);
-[DllImport("kernel32.dll")]
-public static extern IntPtr GetConsoleWindow();
-[DllImport("user32.dll")]
-public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-"@
-    $API = Add-Type -MemberDefinition $signature -Name "Win32Stealth" -Namespace "Kernel32" -PassThru
-    $API::SetConsoleTitle($script:ProcessName) | Out-Null
-    
-    $consoleHandle = $API::GetConsoleWindow()
-    if ([IntPtr]::Zero -ne $consoleHandle) {
-        $API::ShowWindow($consoleHandle, 0) | Out-Null  # 0 = SW_HIDE
-    }
-    
-    # Clean up other PowerShell processes
-    Get-Process -Name powershell* -ErrorAction SilentlyContinue | 
-        Where-Object { $_.Id -ne $PID } | 
-        Stop-Process -Force -ErrorAction SilentlyContinue
-}
-#endregion
-
-#region Update Check (Stealth Version)
-function Invoke-StealthUpdateCheck {
-    $githubScriptUrl = "https://raw.githubusercontent.com/RitzySixx/MouseScript111/refs/heads/main/recoil%20script%20maker.ps1"
-    
-    try {
-        $webClient = New-Object System.Net.WebClient
-        $webClient.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
-        $latestVersion = $webClient.DownloadString($githubScriptUrl)
-        $currentVersion = Get-Content -Path $MyInvocation.MyCommand.Path -Raw -ErrorAction Stop
-        
-        if ($latestVersion -ne $currentVersion) {
-            $tempFile = [System.IO.Path]::GetTempFileName() + ".ps1"
-            $latestVersion | Out-File -FilePath $tempFile -Force -Encoding UTF8
-            Start-Process powershell.exe -ArgumentList "-NoExit -File `"$tempFile`"" -WindowStyle Hidden
-            exit
-        }
-    } catch {}
-}
-#endregion
-
-#region GUI Initialization (Preserved)
 # Define the GitHub raw file URL
 $githubScriptUrl = "https://raw.githubusercontent.com/RitzySixx/MouseScript111/refs/heads/main/recoil%20script%20maker.ps1"
 
-# Invoke stealth update check
-Invoke-StealthUpdateCheck
+# Get the current script path
+$currentScript = $MyInvocation.MyCommand.Path
+
+# Check for updates
+try {
+    $latestVersion = ((Invoke-WebRequest -Uri $githubScriptUrl).Content).Trim()
+    $currentVersion = (Get-Content -Path $currentScript -Raw).Trim()
+
+    if ($latestVersion -ne $currentVersion) {
+        Write-Host "Update found! Grabbing latest version..." -ForegroundColor Green
+        $latestVersion | Out-File -FilePath $currentScript -Force -Encoding UTF8
+        Write-Host "Script will restart once Update is Complete..." -ForegroundColor Green
+        Start-Sleep -Seconds 10
+        Start-Process powershell.exe -ArgumentList "-NoExit -File `"$currentScript`""
+        exit
+    }
+} catch {
+    Write-Host "Unable to check for updates. Continuing with current version..." -ForegroundColor Yellow
+}
 
 # Add necessary assemblies
 Add-Type -AssemblyName PresentationFramework
@@ -257,10 +29,9 @@ Add-Type -AssemblyName System.Drawing
 # Create preset directory if it doesn't exist
 $presetPath = "C:\RecoilControl"
 if (-not (Test-Path $presetPath)) {
-    New-Item -Path $presetPath -ItemType Directory -Force | Out-Null
+    New-Item -Path $presetPath -ItemType Directory | Out-Null
 }
 
-# Your complete XAML remains unchanged
 [xml]$xaml = @"
 <Window 
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -684,14 +455,12 @@ if (-not (Test-Path $presetPath)) {
     </Border>
 </Window>
 "@
-#endregion
 
-#region GUI Setup (Preserved)
 # Create window
 $reader = New-Object System.Xml.XmlNodeReader $xaml
 $window = [Windows.Markup.XamlReader]::Load($reader)
 
-# Get controls (same as before)
+# Get controls
 $closeButton = $window.FindName("CloseButton")
 $minimizeButton = $window.FindName("MinimizeButton")
 $enableRCSCheckBox = $window.FindName("EnableRCSCheckBox")
@@ -718,7 +487,7 @@ $script:verticalRecoilStrength = 15
 $script:verticalCustomStrength = 15
 $script:verticalDelay = 7
 $script:requireToggle = $true
-$script:toggleKey = 0x14  # CapsLock virtual key code
+$script:toggleKey = "CapsLock"
 $script:horizontalDirection = "Left"
 $script:horizontalStrength = 0
 $script:horizontalDelay = 0
@@ -726,11 +495,9 @@ $script:horizontalDelay = 0
 # Create preset directory if it doesn't exist
 $presetDirectory = "C:\RecoilControl"
 if (-not (Test-Path -Path $presetDirectory)) {
-    New-Item -ItemType Directory -Path $presetDirectory -Force | Out-Null
+    New-Item -ItemType Directory -Path $presetDirectory | Out-Null
 }
-#endregion
 
-#region GUI Event Handlers (Enhanced)
 # Window control handlers
 $closeButton.Add_Click({ $window.Close() })
 $minimizeButton.Add_Click({ 
@@ -740,69 +507,109 @@ $minimizeButton.Add_Click({
 })
 
 # Enable RCS checkbox handler
-$recoilRunspace = $null
+# RCS
 $enableRCSCheckBox.Add_Checked({
     $script:enableRCS = $true
-    $statusText.Text = "Status: Ready (Stealth)"
+    $statusText.Text = "Status: Ready"
     $statusText.Foreground = "#00FF00"
-    
-    # Start recoil in hidden runspace
-    $script:recoilJob = [PowerShell]::Create().AddScript({
-        param($vStr, $hStr, $delay, $toggle, $reqToggle)
-        Start-RecoilEngine -VerticalStrength $vStr -HorizontalStrength $hStr `
-            -BaseDelay $delay -ToggleKey $toggle -RequireToggle $reqToggle
-    }).AddArgument($script:verticalRecoilStrength)
-      .AddArgument($script:horizontalStrength)
-      .AddArgument($script:verticalDelay)
-      .AddArgument($script:toggleKey)
-      .AddArgument($script:requireToggle)
-    
-    $script:recoilRunspace = [RunspaceFactory]::CreateRunspace()
-    $script:recoilRunspace.Open()
-    $script:recoilJob.Runspace = $script:recoilRunspace
-    $script:recoilJob.BeginInvoke()
 })
-
 $enableRCSCheckBox.Add_Unchecked({
     $script:enableRCS = $false
     $statusText.Text = "Status: Disabled"
     $statusText.Foreground = "#FF0000"
-    
-    # Clean up runspace
-    if ($script:recoilJob -ne $null) {
-        $script:recoilJob.Stop()
-        $script:recoilJob.Dispose()
-        $script:recoilRunspace.Close()
-        $script:recoilRunspace.Dispose()
-        $script:recoilJob = $null
-        $script:recoilRunspace = $null
-    }
 })
+
+# Add mouse movement functionality
+Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public class MouseMover {
+    [DllImport("user32.dll")]
+    public static extern bool GetAsyncKeyState(int vKey);
+    
+    [DllImport("user32.dll")]
+    public static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
+    
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool GetKeyState(int nVirtKey);
+}
+"@
 
 # Function to check if toggle key is active
 function IsKeyLockOn($key) {
-    $vKey = switch ($key) {
-        "CapsLock" { 0x14 }
-        "NumLock" { 0x90 }
-        "ScrollLock" { 0x91 }
+    switch ($key) {
+        "CapsLock" { return [Console]::CapsLock }
+        "NumLock" { return [Console]::NumberLock }
+        "ScrollLock" { 
+            $scrollLockState = [MouseMover]::GetKeyState(0x91)
+            return ($scrollLockState -band 1) -eq 1
+        }
         default { return $false }
     }
-    $state = [StealthInput]::GetKeyState($vKey)
-    return ($state -band 0x0001) -ne 0
 }
+
+# Function to get random horizontal direction
+function GetRandomHorizontalMovement($strength) {
+    $direction = Get-Random -Minimum 0 -Maximum 2
+    if ($direction -eq 0) {
+        return -$strength  # Left
+    } else {
+        return $strength   # Right
+    }
+}
+
+# Initialize timers for mouse movement
+$verticalTimer = New-Object System.Windows.Forms.Timer
+$verticalTimer.Interval = 10  # Fast polling rate
+$horizontalTimer = New-Object System.Windows.Forms.Timer
+$horizontalTimer.Interval = 10  # Fast polling rate
+
+# Vertical timer tick event handler
+$verticalTimer.Add_Tick({
+    if ($script:enableRCS) {
+        $toggleActive = if ($script:requireToggle) { IsKeyLockOn($script:toggleKey) } else { $true }
+        
+        if ($toggleActive) {
+            if ([MouseMover]::GetAsyncKeyState(0x02)) {
+                if ([MouseMover]::GetAsyncKeyState(0x01)) {
+                    [MouseMover]::mouse_event(0x0001, 0, $script:verticalRecoilStrength, 0, 0)
+                }
+            }
+        }
+    }
+})
+
+# Horizontal timer tick event handler
+$horizontalTimer.Add_Tick({
+    if ($script:enableRCS) {
+        $toggleActive = if ($script:requireToggle) { IsKeyLockOn($script:toggleKey) } else { $true }
+        
+        if ($toggleActive) {
+            if ([MouseMover]::GetAsyncKeyState(0x02)) {
+                if ([MouseMover]::GetAsyncKeyState(0x01)) {
+                    if ($script:horizontalStrength -gt 0) {
+                        $horizontalMove = 0
+                        switch ($script:horizontalDirection) {
+                            "Left" { $horizontalMove = -$script:horizontalStrength }
+                            "Right" { $horizontalMove = $script:horizontalStrength }
+                            "Random" { $horizontalMove = GetRandomHorizontalMovement($script:horizontalStrength) }
+                        }
+                        
+                        [MouseMover]::mouse_event(0x0001, $horizontalMove, 0, 0, 0)
+                    }
+                }
+            }
+        }
+    }
+})
 
 # Control event handlers
 $requireToggleCheckBox.Add_Checked({ $script:requireToggle = $true })
 $requireToggleCheckBox.Add_Unchecked({ $script:requireToggle = $false })
 
 $toggleKeyComboBox.Add_SelectionChanged({
-    $keyName = $toggleKeyComboBox.SelectedItem.Content
-    $script:toggleKey = switch ($keyName) {
-        "CapsLock" { 0x14 }
-        "NumLock" { 0x90 }
-        "ScrollLock" { 0x91 }
-        default { 0x14 }
-    }
+    $script:toggleKey = $toggleKeyComboBox.SelectedItem.Content
 })
 
 # Vertical recoil mode selection handler
@@ -868,6 +675,7 @@ $verticalDelaySlider.Add_ValueChanged({
     $value = [Math]::Max(1, [Math]::Round($verticalDelaySlider.Value))
     $verticalDelayTextBox.Text = $value
     $script:verticalDelay = $value
+    $verticalTimer.Interval = $value
 })
 
 $verticalDelayTextBox.Add_TextChanged({
@@ -876,6 +684,7 @@ $verticalDelayTextBox.Add_TextChanged({
         if ($value -ge 0 -and $value -le 50) {
             $verticalDelaySlider.Value = $value
             $script:verticalDelay = $value
+            $verticalTimer.Interval = $value
         }
     }
 })
@@ -907,6 +716,7 @@ $horizontalDelaySlider.Add_ValueChanged({
     $value = [Math]::Max(1, [Math]::Round($horizontalDelaySlider.Value))
     $horizontalDelayTextBox.Text = $value
     $script:horizontalDelay = $value
+    $horizontalTimer.Interval = $value
 })
 
 $horizontalDelayTextBox.Add_TextChanged({
@@ -915,6 +725,7 @@ $horizontalDelayTextBox.Add_TextChanged({
         if ($value -ge 0 -and $value -le 50) {
             $horizontalDelaySlider.Value = $value
             $script:horizontalDelay = $value
+            $horizontalTimer.Interval = $value
         }
     }
 })
@@ -1161,35 +972,6 @@ $loadPresetButton.Add_Click({
         }
     })
 
-    # Function to load selected preset
-    function LoadSelectedPreset {
-        $preset = Get-Content "$presetDirectory\$($presetList.SelectedItem).rcpreset" | ConvertFrom-Json
-        
-        # Current Preset
-        $currentPresetText = $window.FindName("CurrentPresetText")
-        $currentPresetText.Text = "Preset: $($presetList.SelectedItem)"
-
-        $enableRCSCheckBox.IsChecked = $preset.EnableRCS
-        $requireToggleCheckBox.IsChecked = $preset.RequireToggle
-        $script:toggleKey = $preset.ToggleKey
-        
-        $verticalRecoilModeComboBox.SelectedItem = $verticalRecoilModeComboBox.Items | 
-            Where-Object { $_.Content -eq $preset.VerticalRecoilMode }
-        
-        $verticalCustomStrengthTextBox.Text = $preset.VerticalRecoilStrength
-        $verticalCustomStrengthSlider.Value = $preset.VerticalRecoilStrength
-        $verticalDelayTextBox.Text = $preset.VerticalDelay
-        $verticalDelaySlider.Value = $preset.VerticalDelay
-        
-        $horizontalDirectionComboBox.SelectedItem = $horizontalDirectionComboBox.Items | 
-            Where-Object { $_.Content -eq $preset.HorizontalDirection }
-        
-        $horizontalStrengthTextBox.Text = $preset.HorizontalStrength
-        $horizontalStrengthSlider.Value = $preset.HorizontalStrength
-        $horizontalDelayTextBox.Text = $preset.HorizontalDelay
-        $horizontalDelaySlider.Value = $preset.HorizontalDelay
-    }
-
     # Double-click to load
     $presetList.Add_MouseDoubleClick({
         if ($presetList.SelectedItem) {
@@ -1369,22 +1151,50 @@ $renameButton.Add_Click({
 $loadWindow.ShowDialog()
 })
 
+    # Function to load selected preset
+    function LoadSelectedPreset {
+        $preset = Get-Content "$presetDirectory\$($presetList.SelectedItem).rcpreset" | ConvertFrom-Json
+        
+        # Current Preset
+        $currentPresetText = $window.FindName("CurrentPresetText")
+        $currentPresetText.Text = "Preset: $($presetList.SelectedItem)"
+
+        $enableRCSCheckBox.IsChecked = $preset.EnableRCS
+        $requireToggleCheckBox.IsChecked = $preset.RequireToggle
+        $toggleKeyComboBox.SelectedItem = $toggleKeyComboBox.Items | 
+            Where-Object { $_.Content -eq $preset.ToggleKey }
+        
+        $verticalRecoilModeComboBox.SelectedItem = $verticalRecoilModeComboBox.Items | 
+            Where-Object { $_.Content -eq $preset.VerticalRecoilMode }
+        
+        $verticalCustomStrengthTextBox.Text = $preset.VerticalRecoilStrength
+        $verticalCustomStrengthSlider.Value = $preset.VerticalRecoilStrength
+        $verticalDelayTextBox.Text = $preset.VerticalDelay
+        $verticalDelaySlider.Value = $preset.VerticalDelay
+        
+        $horizontalDirectionComboBox.SelectedItem = $horizontalDirectionComboBox.Items | 
+            Where-Object { $_.Content -eq $preset.HorizontalDirection }
+        
+        $horizontalStrengthTextBox.Text = $preset.HorizontalStrength
+        $horizontalStrengthSlider.Value = $preset.HorizontalStrength
+        $horizontalDelayTextBox.Text = $preset.HorizontalDelay
+        $horizontalDelaySlider.Value = $preset.HorizontalDelay
+    }
+
 # Window drag functionality
 $window.Add_MouseLeftButtonDown({
     $window.DragMove()
 })
 
-Hide-PowerShell
-Invoke-ProcessHiding
+# Start timers
+$verticalTimer.Start()
+$horizontalTimer.Start()
 
 # Show window
-$window.ShowDialog() | Out-Null
+$window.ShowDialog()
 
 # Cleanup
-if ($null -ne $script:recoilJob) {
-    $script:recoilJob.Stop()
-    $script:recoilJob.Dispose()
-    $script:recoilRunspace.Close()
-    $script:recoilRunspace.Dispose()
-}
-#endregion
+$verticalTimer.Stop()
+$horizontalTimer.Stop()
+$verticalTimer.Dispose()
+$horizontalTimer.Dispose()
