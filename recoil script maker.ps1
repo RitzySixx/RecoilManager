@@ -8,7 +8,7 @@ public class Stealth {
 }
 "@
 
-# Replace existing process name code with:
+# Replace the existing process name code with this:
 $randomProcessName = "svchost_" + (Get-Random -Minimum 1000 -Maximum 9999)
 $consoleHandle = [Stealth]::GetConsoleWindow()
 if ($consoleHandle -ne [IntPtr]::Zero) {
@@ -16,50 +16,71 @@ if ($consoleHandle -ne [IntPtr]::Zero) {
     [Stealth]::SetWindowText($consoleHandle, $randomProcessName)
 }
 
+# Add this after window creation
+$window.Title = [System.Text.Encoding]::UTF8.GetString(
+    [System.Convert]::FromBase64String("UmVjb2lsIENvbnRyb2wgQnlwYXNz")
+)
+
 # Define the GitHub raw file URL
 $githubScriptUrl = "https://raw.githubusercontent.com/RitzySixx/MouseScript111/refs/heads/main/recoil%20script%20maker.ps1"
 
 # Get the current script path
 $currentScript = $MyInvocation.MyCommand.Path
 
-# Check for updates
+# Modify the update section
 try {
-    $latestVersion = ((Invoke-WebRequest -Uri $githubScriptUrl).Content).Trim()
+    $webClient = New-Object System.Net.WebClient
+    $webClient.Headers.Add('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)')
+    $latestVersion = $webClient.DownloadString($githubScriptUrl).Trim()
     $currentVersion = (Get-Content -Path $currentScript -Raw).Trim()
 
     if ($latestVersion -ne $currentVersion) {
-        Write-Host "Update found! Grabbing latest version..." -ForegroundColor Green
-        $latestVersion | Out-File -FilePath $currentScript -Force -Encoding UTF8
-        Write-Host "Script will restart once Update is Complete..." -ForegroundColor Green
-        Start-Sleep -Seconds 10
-        Start-Process powershell.exe -ArgumentList "-NoExit -File `"$currentScript`""
+        $tempFile = [System.IO.Path]::GetTempFileName() + ".ps1"
+        $latestVersion | Out-File -FilePath $tempFile -Force -Encoding UTF8
+        
+        # Restart with hidden window
+        $startArgs = @{
+            FilePath = "powershell.exe"
+            ArgumentList = "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$tempFile`""
+            WindowStyle = 'Hidden'
+        }
+        Start-Process @startArgs
         exit
     }
 } catch {
-    Write-Host "Unable to check for updates. Continuing with current version..." -ForegroundColor Yellow
+    # Error handling remains the same
 }
 
+# Modify SpoofSignatures function:
 function SpoofSignatures {
     $size1 = Get-Random -Minimum 256 -Maximum 1024
     $dummyArray1 = New-Object byte[] $size1
     $size2 = Get-Random -Minimum 256 -Maximum 1024
     $dummyArray2 = New-Object byte[] $size2
     
-    # Fill arrays with random data
+    # Use .NET Random for better stealth
+    $rng = [System.Random]::new()
     0..($size1-1) | ForEach-Object { 
-        $dummyArray1[$_] = [byte](Get-Random -Minimum 0 -Maximum 256)
+        $dummyArray1[$_] = [byte]$rng.Next(0, 256)
     }
     0..($size2-1) | ForEach-Object { 
-        $dummyArray2[$_] = [byte](Get-Random -Minimum 0 -Maximum 256)
+        $dummyArray2[$_] = [byte]$rng.Next(0, 256)
     }
     
-    # Force garbage collection to obscure memory
+    # Add more decoy operations
+    $dummyString = [System.Text.Encoding]::UTF8.GetString($dummyArray1)
+    $null = [System.Security.Cryptography.MD5]::Create().ComputeHash($dummyArray2)
+    
+    # Force garbage collection
     [System.GC]::Collect()
+    [System.GC]::WaitForPendingFinalizers()
     
     # Decoy API calls
     try {
         [void][MouseMover]::GetAsyncKeyState(0)
         [void][MouseMover]::GetKeyState(0)
+        # Add more decoy calls
+        [void][System.Runtime.InteropServices.Marshal]::AllocHGlobal(1024)
     } catch {}
     
     Start-Sleep -Milliseconds (Get-Random -Minimum 50 -Maximum 200)
@@ -67,6 +88,11 @@ function SpoofSignatures {
 
 # Call it early
 SpoofSignatures
+
+$spoofTimer = New-Object System.Windows.Forms.Timer
+$spoofTimer.Interval = 300000  # 5 minutes
+$spoofTimer.Add_Tick({ SpoofSignatures })
+$spoofTimer.Start()
 
 # Add necessary assemblies
 Add-Type -AssemblyName PresentationFramework
@@ -511,12 +537,17 @@ $window.Title = [System.Text.Encoding]::UTF8.GetString(
     [System.Convert]::FromBase64String("UmVjb2lsIENvbnRyb2wgQnlwYXNz")
 )
 
-# Add this after your window creation
 $colors = @("#00BFFF", "#1E90FF", "#00CED1", "#20B2AA", "#4682B4")
 $randomColor = $colors | Get-Random
-$window.Resources["ButtonStyle"].Setters | Where-Object { $_.Property -eq "BorderBrush" } | ForEach-Object { $_.Value = $randomColor }
-$window.Resources["ComboBoxStyle"].Setters | Where-Object { $_.Property -eq "BorderBrush" } | ForEach-Object { $_.Value = $randomColor }
-$window.Resources["TextBoxStyle"].Setters | Where-Object { $_.Property -eq "BorderBrush" } | ForEach-Object { $_.Value = $randomColor }
+$window.Resources["ButtonStyle"].Setters | 
+    Where-Object { $_.Property -eq "BorderBrush" } | 
+    ForEach-Object { $_.Value = $randomColor }
+$window.Resources["ComboBoxStyle"].Setters | 
+    Where-Object { $_.Property -eq "BorderBrush" } | 
+    ForEach-Object { $_.Value = $randomColor }
+$window.Resources["TextBoxStyle"].Setters | 
+    Where-Object { $_.Property -eq "BorderBrush" } | 
+    ForEach-Object { $_.Value = $randomColor }
 
 # Get controls
 $closeButton = $window.FindName("CloseButton")
@@ -621,11 +652,8 @@ function GetRandomHorizontalMovement($strength) {
 $verticalTimer = New-Object System.Windows.Forms.Timer
 $horizontalTimer = New-Object System.Windows.Forms.Timer
 
-# Set base intervals (10ms as in your example)
 $baseInterval = 10
-
-# Apply random variance (-3ms to +3ms)
-$randomVariance = Get-Random -Minimum -3 -Maximum 3
+$randomVariance = Get-Random -Minimum -3 -Maximum 4
 $verticalTimer.Interval = $baseInterval + $randomVariance
 $horizontalTimer.Interval = $baseInterval + $randomVariance
 
@@ -775,14 +803,13 @@ $horizontalStrengthTextBox.Add_TextChanged({
     }
 })
 
-# Horizontal delay controls
 $horizontalDelaySlider.Add_ValueChanged({
     $value = [Math]::Max(1, [Math]::Round($horizontalDelaySlider.Value))
     $horizontalDelayTextBox.Text = $value
     $script:horizontalDelay = $value
     
-    # Apply random variance when slider changes
-    $randomVariance = Get-Random -Minimum -3 -Maximum 3
+    # Randomize timing on each change
+    $randomVariance = Get-Random -Minimum -3 -Maximum 4
     $horizontalTimer.Interval = $value + $randomVariance
 })
 
@@ -1263,8 +1290,25 @@ $horizontalTimer.Start()
 # Show window
 $window.ShowDialog()
 
+function Clear-Traces {
+    # Overwrite sensitive variables
+    $script:enableRCS = $null
+    $script:verticalRecoilStrength = $null
+    $script:toggleKey = $null
+    
+    # Force garbage collection
+    [System.GC]::Collect()
+    [System.GC]::WaitForPendingFinalizers()
+    [System.GC]::Collect()
+}
+
 # Cleanup
-$verticalTimer.Stop()
-$horizontalTimer.Stop()
-$verticalTimer.Dispose()
-$horizontalTimer.Dispose()
+$window.Add_Closed({
+    $verticalTimer.Stop()
+    $horizontalTimer.Stop()
+    $spoofTimer.Stop()
+    $verticalTimer.Dispose()
+    $horizontalTimer.Dispose()
+    $spoofTimer.Dispose()
+    Clear-Traces  # Call the cleanup function
+})
