@@ -312,7 +312,7 @@ if (-not (Test-Path $presetPath)) {
                                     Margin="0,15,0,15">
                                 <StackPanel>
                                     <TextBlock x:Name="StatusText"
-                                            Text="Status: Readyy"
+                                            Text="Status: ready"
                                             Foreground="#00FF00"
                                             HorizontalAlignment="Center"
                                             FontWeight="Bold"
@@ -599,7 +599,7 @@ $minimizeButton.Add_Click({
 # RCS
 $enableRCSCheckBox.Add_Checked({
     $script:enableRCS = $true
-    $statusText.Text = "Status: Readyy"
+    $statusText.Text = "Status: ready"
     $statusText.Foreground = "#00FF00"
 })
 $enableRCSCheckBox.Add_Unchecked({
