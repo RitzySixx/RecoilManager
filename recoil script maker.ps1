@@ -1,52 +1,28 @@
-# ===== ENHANCED STEALTH INITIALIZATION =====
-$signature = @"
+Add-Type @"
 using System;
 using System.Runtime.InteropServices;
-
-public class ProcessHider {
-    [DllImport("kernel32.dll", SetLastError = true)]
-    public static extern bool FreeConsole();
-
-    [DllImport("kernel32.dll", SetLastError = true)]
-    public static extern bool AttachConsole(uint dwProcessId);
-
-    [DllImport("kernel32.dll", SetLastError = true)]
-    public static extern bool SetConsoleTitle(string lpConsoleTitle);
-
-    [DllImport("user32.dll", SetLastError = true)]
-    public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
-
-    [DllImport("user32.dll", SetLastError = true)]
-    public static extern int SetWindowText(IntPtr hWnd, string text);
-    
-    [DllImport("kernel32.dll")]
-    public static extern IntPtr GetConsoleWindow();
-    
-    [DllImport("user32.dll")]
-    public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+public class Stealth {
+    [DllImport("kernel32.dll")] public static extern IntPtr GetConsoleWindow();
+    [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+    [DllImport("user32.dll")] public static extern int SetWindowText(IntPtr hWnd, string text);
 }
 "@
-Add-Type -TypeDefinition $signature -Language CSharp
 
-# Detach from current console
-[ProcessHider]::FreeConsole() | Out-Null
-
-# FIXED: Use explicit uint conversion for attach parameter
-[ProcessHider]::AttachConsole([uint32]4294967295) | Out-Null  # Attach to parent console (0xFFFFFFFF as uint)
-
-# Set random console title
-$randomTitle = "RuntimeBroker_" + (Get-Random -Minimum 1000 -Maximum 9999)
-[ProcessHider]::SetConsoleTitle($randomTitle) | Out-Null
-
-# Hide PowerShell window completely
-$consoleHandle = [ProcessHider]::FindWindow("ConsoleWindowClass", $null)
+# Replace the existing process name code with this:
+$randomProcessName = "svchost_" + (Get-Random -Minimum 1000 -Maximum 9999)
+$consoleHandle = [Stealth]::GetConsoleWindow()
 if ($consoleHandle -ne [IntPtr]::Zero) {
-    [ProcessHider]::ShowWindow($consoleHandle, 0)  # SW_HIDE
-    [ProcessHider]::SetWindowText($consoleHandle, $randomTitle)
+    [Stealth]::ShowWindow($consoleHandle, 0)  # 0 = SW_HIDE
+    [Stealth]::SetWindowText($consoleHandle, $randomProcessName)
 }
 
+# Add this after window creation
+$window.Title = [System.Text.Encoding]::UTF8.GetString(
+    [System.Convert]::FromBase64String("UmVjb2lsIENvbnRyb2wgQnlwYXNz")
+)
+
 # Define the GitHub raw file URL
-$githubScriptUrl = "https://raw.githubusercontent.com/RitzySixx/RecoilManager/refs/heads/main/recoil%20script%20maker.ps1"
+$githubScriptUrl = "https://raw.githubusercontent.com/RitzySixx/MouseScript111/refs/heads/main/recoil%20script%20maker.ps1"
 
 # Get the current script path
 $currentScript = $MyInvocation.MyCommand.Path
@@ -62,69 +38,57 @@ try {
         $tempFile = [System.IO.Path]::GetTempFileName() + ".ps1"
         $latestVersion | Out-File -FilePath $tempFile -Force -Encoding UTF8
         
-        # Restart with hidden window using double-launch technique
+        # Restart with hidden window
         $startArgs = @{
             FilePath = "powershell.exe"
-            ArgumentList = @(
-                "-NoProfile",
-                "-ExecutionPolicy Bypass",
-                "-Command",
-                "Start-Process powershell -ArgumentList '-NoExit -WindowStyle Hidden -File ```"$tempFile```"' -WindowStyle Hidden"
-            )
+            ArgumentList = "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$tempFile`""
             WindowStyle = 'Hidden'
         }
         Start-Process @startArgs
         exit
     }
 } catch {
-    Write-Host "Unable to check for updates. Continuing with current version..." -ForegroundColor Yellow
+    # Error handling remains the same
 }
 
-# Enhanced SpoofSignatures function
+# Modify SpoofSignatures function:
 function SpoofSignatures {
-    # Generate random memory blocks
-    $size1 = Get-Random -Minimum 512 -Maximum 2048
+    $size1 = Get-Random -Minimum 256 -Maximum 1024
     $dummyArray1 = New-Object byte[] $size1
-    $size2 = Get-Random -Minimum 512 -Maximum 2048
+    $size2 = Get-Random -Minimum 256 -Maximum 1024
     $dummyArray2 = New-Object byte[] $size2
     
-    # Use secure RNG
-    $rng = [System.Security.Cryptography.RNGCryptoServiceProvider]::new()
-    $rng.GetBytes($dummyArray1)
-    $rng.GetBytes($dummyArray2)
-    $rng.Dispose()
+    # Use .NET Random for better stealth
+    $rng = [System.Random]::new()
+    0..($size1-1) | ForEach-Object { 
+        $dummyArray1[$_] = [byte]$rng.Next(0, 256)
+    }
+    0..($size2-1) | ForEach-Object { 
+        $dummyArray2[$_] = [byte]$rng.Next(0, 256)
+    }
     
-    # Create decoy operations
-    $dummyString = [System.Text.Encoding]::Unicode.GetString($dummyArray1)
-    $null = [System.Security.Cryptography.SHA256]::Create().ComputeHash($dummyArray2)
-    
-    # REMOVED: MainWindowTitle is read-only - use alternative spoofing
-    # Instead, create more memory noise
-    $dummyArray3 = New-Object byte[] 1024
-    $rng = [System.Security.Cryptography.RNGCryptoServiceProvider]::new()
-    $rng.GetBytes($dummyArray3)
-    $rng.Dispose()
+    # Add more decoy operations
+    $dummyString = [System.Text.Encoding]::UTF8.GetString($dummyArray1)
+    $null = [System.Security.Cryptography.MD5]::Create().ComputeHash($dummyArray2)
     
     # Force garbage collection
     [System.GC]::Collect()
     [System.GC]::WaitForPendingFinalizers()
-    [System.GC]::Collect()
     
     # Decoy API calls
     try {
+        [void][MouseMover]::GetAsyncKeyState(0)
+        [void][MouseMover]::GetKeyState(0)
+        # Add more decoy calls
         [void][System.Runtime.InteropServices.Marshal]::AllocHGlobal(1024)
-        [void][System.Runtime.InteropServices.Marshal]::FreeHGlobal([IntPtr]::Zero)
-        [void][System.Diagnostics.Process]::GetProcesses()
     } catch {}
     
-    # Random delay
-    Start-Sleep -Milliseconds (Get-Random -Minimum 50 -Maximum 300)
+    Start-Sleep -Milliseconds (Get-Random -Minimum 50 -Maximum 200)
 }
 
 # Call it early
 SpoofSignatures
 
-# Initialize periodic spoofing
 $spoofTimer = New-Object System.Windows.Forms.Timer
 $spoofTimer.Interval = 300000  # 5 minutes
 $spoofTimer.Add_Tick({ SpoofSignatures })
@@ -568,6 +532,10 @@ if (-not (Test-Path $presetPath)) {
 # Create window
 $reader = New-Object System.Xml.XmlNodeReader $xaml
 $window = [Windows.Markup.XamlReader]::Load($reader)
+
+$window.Title = [System.Text.Encoding]::UTF8.GetString(
+    [System.Convert]::FromBase64String("UmVjb2lsIENvbnRyb2wgQnlwYXNz")
+)
 
 $colors = @("#00BFFF", "#1E90FF", "#00CED1", "#20B2AA", "#4682B4")
 $randomColor = $colors | Get-Random
