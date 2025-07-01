@@ -30,7 +30,9 @@ Add-Type -TypeDefinition $signature -Language CSharp
 
 # Detach from current console
 [ProcessHider]::FreeConsole() | Out-Null
-[ProcessHider]::AttachConsole(0xFFFFFFFF) | Out-Null  # Attach to parent console
+
+# FIXED: Use explicit uint conversion for attach parameter
+[ProcessHider]::AttachConsole([uint32]4294967295) | Out-Null  # Attach to parent console (0xFFFFFFFF as uint)
 
 # Set random console title
 $randomTitle = "RuntimeBroker_" + (Get-Random -Minimum 1000 -Maximum 9999)
@@ -42,10 +44,6 @@ if ($consoleHandle -ne [IntPtr]::Zero) {
     [ProcessHider]::ShowWindow($consoleHandle, 0)  # SW_HIDE
     [ProcessHider]::SetWindowText($consoleHandle, $randomTitle)
 }
-
-# Add this to spoof process name in Task Manager
-$dummyProcessName = "RuntimeBroker_" + (Get-Random -Minimum 1000 -Maximum 9999)
-[System.Diagnostics.Process]::GetCurrentProcess().MainWindowTitle = $dummyProcessName
 
 # Define the GitHub raw file URL
 $githubScriptUrl = "https://raw.githubusercontent.com/RitzySixx/RecoilManager/refs/heads/main/recoil%20script%20maker.ps1"
@@ -100,11 +98,12 @@ function SpoofSignatures {
     $dummyString = [System.Text.Encoding]::Unicode.GetString($dummyArray1)
     $null = [System.Security.Cryptography.SHA256]::Create().ComputeHash($dummyArray2)
     
-    # Memory spoofing - overwrite PowerShell signatures
-    $dummyProcessName = "RuntimeBroker_" + (Get-Random -Minimum 1000 -Maximum 9999)
-    try {
-        [System.Diagnostics.Process]::GetCurrentProcess().MainWindowTitle = $dummyProcessName
-    } catch {}
+    # REMOVED: MainWindowTitle is read-only - use alternative spoofing
+    # Instead, create more memory noise
+    $dummyArray3 = New-Object byte[] 1024
+    $rng = [System.Security.Cryptography.RNGCryptoServiceProvider]::new()
+    $rng.GetBytes($dummyArray3)
+    $rng.Dispose()
     
     # Force garbage collection
     [System.GC]::Collect()
