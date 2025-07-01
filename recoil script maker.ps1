@@ -21,6 +21,37 @@ try {
     Write-Host "Unable to check for updates. Continuing with current version..." -ForegroundColor Yellow
 }
 
+# Add this near the start of your script
+$randomProcessName = "svchost_" + (Get-Random -Minimum 1000 -Maximum 9999)
+try {
+    (Get-Process -Id $PID).MainWindowTitle = $randomProcessName
+} catch {}
+
+# Add this near the top of your script (before any mouse movement code)
+$obfuscatedWindowTitle = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("UmVjb2lsIENvbnRyb2wgQnlwYXNz"))
+$window.Title = $obfuscatedWindowTitle
+
+function SpoofSignatures {
+    # Randomize memory patterns
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
+    $dummyArray1 = New-Object byte[] (Get-Random -Minimum 256 -Maximum 1024)
+    
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
+    $dummyArray2 = New-Object byte[] (Get-Random -Minimum 256 -Maximum 1024)
+    
+    # Create decoy API calls
+    try {
+        [void][MouseMover]::GetAsyncKeyState(0x00)
+        [void][MouseMover]::GetKeyState(0x00)
+    } catch {}
+    
+    # Add random sleep to break timing analysis
+    Start-Sleep -Milliseconds (Get-Random -Minimum 50 -Maximum 200)
+}
+
+# Call it early
+SpoofSignatures
+
 # Add necessary assemblies
 Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName System.Windows.Forms
@@ -460,6 +491,13 @@ if (-not (Test-Path $presetPath)) {
 $reader = New-Object System.Xml.XmlNodeReader $xaml
 $window = [Windows.Markup.XamlReader]::Load($reader)
 
+# Add this after your window creation
+$colors = @("#00BFFF", "#1E90FF", "#00CED1", "#20B2AA", "#4682B4")
+$randomColor = $colors | Get-Random
+$window.Resources["ButtonStyle"].Setters | Where-Object { $_.Property -eq "BorderBrush" } | ForEach-Object { $_.Value = $randomColor }
+$window.Resources["ComboBoxStyle"].Setters | Where-Object { $_.Property -eq "BorderBrush" } | ForEach-Object { $_.Value = $randomColor }
+$window.Resources["TextBoxStyle"].Setters | Where-Object { $_.Property -eq "BorderBrush" } | ForEach-Object { $_.Value = $randomColor }
+
 # Get controls
 $closeButton = $window.FindName("CloseButton")
 $minimizeButton = $window.FindName("MinimizeButton")
@@ -561,9 +599,15 @@ function GetRandomHorizontalMovement($strength) {
 
 # Initialize timers for mouse movement
 $verticalTimer = New-Object System.Windows.Forms.Timer
-$verticalTimer.Interval = 10  # Fast polling rate
 $horizontalTimer = New-Object System.Windows.Forms.Timer
-$horizontalTimer.Interval = 10  # Fast polling rate
+
+# Set base intervals (10ms as in your example)
+$baseInterval = 10
+
+# Apply random variance (-3ms to +3ms)
+$randomVariance = Get-Random -Minimum -3 -Maximum 3
+$verticalTimer.Interval = $baseInterval + $randomVariance
+$horizontalTimer.Interval = $baseInterval + $randomVariance
 
 # Vertical timer tick event handler
 $verticalTimer.Add_Tick({
@@ -716,7 +760,10 @@ $horizontalDelaySlider.Add_ValueChanged({
     $value = [Math]::Max(1, [Math]::Round($horizontalDelaySlider.Value))
     $horizontalDelayTextBox.Text = $value
     $script:horizontalDelay = $value
-    $horizontalTimer.Interval = $value
+    
+    # Apply random variance when slider changes
+    $randomVariance = Get-Random -Minimum -3 -Maximum 3
+    $horizontalTimer.Interval = $value + $randomVariance
 })
 
 $horizontalDelayTextBox.Add_TextChanged({
@@ -725,7 +772,10 @@ $horizontalDelayTextBox.Add_TextChanged({
         if ($value -ge 0 -and $value -le 50) {
             $horizontalDelaySlider.Value = $value
             $script:horizontalDelay = $value
-            $horizontalTimer.Interval = $value
+            
+            # Apply random variance when text changes
+            $randomVariance = Get-Random -Minimum -3 -Maximum 3
+            $horizontalTimer.Interval = $value + $randomVariance
         }
     }
 })
