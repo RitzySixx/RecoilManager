@@ -570,10 +570,6 @@ if (-not (Test-Path $presetPath)) {
 $reader = New-Object System.Xml.XmlNodeReader $xaml
 $window = [Windows.Markup.XamlReader]::Load($reader)
 
-$window.Title = [System.Text.Encoding]::UTF8.GetString(
-    [System.Convert]::FromBase64String("UmVjb2lsIENvbnRyb2wgQnlwYXNz")
-)
-
 $colors = @("#00BFFF", "#1E90FF", "#00CED1", "#20B2AA", "#4682B4")
 $randomColor = $colors | Get-Random
 $window.Resources["ButtonStyle"].Setters | 
