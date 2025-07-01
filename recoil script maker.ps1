@@ -1,3 +1,21 @@
+Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public class Stealth {
+    [DllImport("kernel32.dll")] public static extern IntPtr GetConsoleWindow();
+    [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+    [DllImport("user32.dll")] public static extern int SetWindowText(IntPtr hWnd, string text);
+}
+"@
+
+# Replace existing process name code with:
+$randomProcessName = "svchost_" + (Get-Random -Minimum 1000 -Maximum 9999)
+$consoleHandle = [Stealth]::GetConsoleWindow()
+if ($consoleHandle -ne [IntPtr]::Zero) {
+    [Stealth]::ShowWindow($consoleHandle, 0)  # 0 = SW_HIDE
+    [Stealth]::SetWindowText($consoleHandle, $randomProcessName)
+}
+
 # Define the GitHub raw file URL
 $githubScriptUrl = "https://raw.githubusercontent.com/RitzySixx/MouseScript111/refs/heads/main/recoil%20script%20maker.ps1"
 
@@ -21,31 +39,29 @@ try {
     Write-Host "Unable to check for updates. Continuing with current version..." -ForegroundColor Yellow
 }
 
-# Add this near the start of your script
-$randomProcessName = "svchost_" + (Get-Random -Minimum 1000 -Maximum 9999)
-try {
-    (Get-Process -Id $PID).MainWindowTitle = $randomProcessName
-} catch {}
-
-# Add this near the top of your script (before any mouse movement code)
-$obfuscatedWindowTitle = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("UmVjb2lsIENvbnRyb2wgQnlwYXNz"))
-$window.Title = $obfuscatedWindowTitle
-
 function SpoofSignatures {
-    # Randomize memory patterns
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
-    $dummyArray1 = New-Object byte[] (Get-Random -Minimum 256 -Maximum 1024)
+    $size1 = Get-Random -Minimum 256 -Maximum 1024
+    $dummyArray1 = New-Object byte[] $size1
+    $size2 = Get-Random -Minimum 256 -Maximum 1024
+    $dummyArray2 = New-Object byte[] $size2
     
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
-    $dummyArray2 = New-Object byte[] (Get-Random -Minimum 256 -Maximum 1024)
+    # Fill arrays with random data
+    0..($size1-1) | ForEach-Object { 
+        $dummyArray1[$_] = [byte](Get-Random -Minimum 0 -Maximum 256)
+    }
+    0..($size2-1) | ForEach-Object { 
+        $dummyArray2[$_] = [byte](Get-Random -Minimum 0 -Maximum 256)
+    }
     
-    # Create decoy API calls
+    # Force garbage collection to obscure memory
+    [System.GC]::Collect()
+    
+    # Decoy API calls
     try {
-        [void][MouseMover]::GetAsyncKeyState(0x00)
-        [void][MouseMover]::GetKeyState(0x00)
+        [void][MouseMover]::GetAsyncKeyState(0)
+        [void][MouseMover]::GetKeyState(0)
     } catch {}
     
-    # Add random sleep to break timing analysis
     Start-Sleep -Milliseconds (Get-Random -Minimum 50 -Maximum 200)
 }
 
@@ -490,6 +506,10 @@ if (-not (Test-Path $presetPath)) {
 # Create window
 $reader = New-Object System.Xml.XmlNodeReader $xaml
 $window = [Windows.Markup.XamlReader]::Load($reader)
+
+$window.Title = [System.Text.Encoding]::UTF8.GetString(
+    [System.Convert]::FromBase64String("UmVjb2lsIENvbnRyb2wgQnlwYXNz")
+)
 
 # Add this after your window creation
 $colors = @("#00BFFF", "#1E90FF", "#00CED1", "#20B2AA", "#4682B4")
